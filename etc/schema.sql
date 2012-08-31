@@ -1,0 +1,17 @@
+SET SESSION storage_engine = "InnoDB";
+SET SESSION time_zone = "+0:00";
+ALTER DATABASE CHARACTER SET "utf8";
+
+DROP TABLE IF EXISTS forum;
+CREATE TABLE IF NOT EXISTS forum (
+    content_hash VARBINARY(32) NOT NULL PRIMARY KEY,
+    under_hash VARBINARY(32) NOT NULL,
+    follow_hash VARBINARY(32) DEFAULT NULL,
+    access VARBINARY(32) NOT NULL,
+    flags VARBINARY(32) NOT NULL DEFAULT '',
+    text TEXT NOT NULL DEFAULT '',
+    ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY(under_hash)
+);
+
+
