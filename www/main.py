@@ -11,13 +11,15 @@ import sys
 settings = dict(
    cookie_secret  = "65vtg78h9m097yn76vr64v7fbgn6tgmh79hm79ghmy879b7",
    static_path    = os.path.join(os.path.dirname(__file__), "static"),
-   template_path  = os.path.join(os.path.dirname(__file__), "views"),
+   template_path  = os.path.join(os.path.dirname(__file__), "views" ),
    xsrf_cookies   = True
 )
 
 application = tornado.web.Application( [
-    ( "^/(?P<access>[0-9a-zA-Z]+)",           controllers.index         ),
-    ( "^/(?P<access>[0-9a-zA-Z]+)/forum",     controllers.forum         ),
+    ( "^/recruit",                                 controllers.recruit      ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)",               controllers.index        ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/forum",         controllers.forum        ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/forum/create",  controllers.forum_create ),
 ], **settings )
 
 
