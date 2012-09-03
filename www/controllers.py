@@ -21,8 +21,9 @@ class bulletin( tornado.web.RequestHandler ):
 
 
 class wiki( tornado.web.RequestHandler ):
-    def get( self, access ):
-        self.render( "wiki.html", access=access )
+    def get( self, access, page ):
+        page_content = ""
+        self.render( "wiki.html", access=access, page=page, page_content=page_content )
     def post( self ):
         access = self.get_argument("access")
         follow = self.get_argument("follow",None)
