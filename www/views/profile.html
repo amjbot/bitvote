@@ -11,29 +11,24 @@
 <div class="container">
 
   <div class="row">
-    <div class="span3 bs-docs-sidebar">
+    <div class="span3 bs-docs-sidebar nav" id="myTab">
       <ul class="nav nav-list bs-docs-sidenav">
-        <li><a href="/static/tar/source.tar.gz"><i class="icon icon-chevron-right"></i> Download</a></li>
-        <li><a href="/{{ access }}/profile"><i class="icon icon-chevron-right"></i> Create a profile</a></li>
-        <li><a href="/{{ access }}/web"><i class="icon icon-chevron-right"></i> Share the web</a></li>
-        <li><a href="/{{ access }}/wiki"><i class="icon icon-chevron-right"></i> Impress your knowledge</a></li>
-        <li><a href="/{{ access }}/bulletin"><i class="icon icon-chevron-right"></i> Spread the news</a></li>
+        <li class="active"><a href="#alias" data-toggle="tab"><i class="icon icon-chevron-right"></i> Alias</a></li>
+        <li><a href="#documents" data-toggle="tab"><i class="icon icon-chevron-right"></i> Documents</a></li>
+        <li><a href="#timebank" data-toggle="tab"><i class="icon icon-chevron-right"></i> Time Bank</a></li>
       </ul>
     </div>
 
-    <div class="span9">
-      <section>
-        <p>Welcome visitor.</p>
-        <p>This is your homepage. Remember the address or you will lose access to this account.</p>
-        <p>
-          <b>Rules (Subject to Change)</b><br>
-          <ul>
-            <li>You may speak freely if you have the time.</li>
-            <li>You may suppress the speech of others if you have the time.</li>
-            <li>You are who you say you are until somebody remembers you.</li>
-          </ul>
-        </p>
-      </section>
+    <div id="myTabContent" class="span9 tab-content">
+      <div class="tab-pane fade active in" id="alias">
+        <h2>Alias</h2>
+      </div>
+      <div class="tab-pane fade" id="documents">
+        <h2>Documents</h2>
+      </div>
+      <div class="tab-pane fade" id="timebank">
+        <h2>Time Bank</h2>
+      </div>
     </div>
 
   </div>
