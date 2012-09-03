@@ -15,9 +15,8 @@ class index( tornado.web.RequestHandler ):
 
 class bulletin( tornado.web.RequestHandler ):
     def get( self, access ):
-        page = int(self.get_argument("page",0))
-        topics = db.query("SELECT * FROM forum WHERE follow_hash IS NULL ORDER BY ts DESC LIMIT %s,20", 20*page)
-        self.render( "bulletin.html", page=page, topics=topics, access=access )
+        bulletin = [ tornado.database.Row({"title":"test", "md5":"asdfasdfasdf"}) ]
+        self.render( "bulletin.html", access=access, bulletin=bulletin )
 
 
 class wiki( tornado.web.RequestHandler ):
