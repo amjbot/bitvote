@@ -1,24 +1,52 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>
-        This is your homepage. Remember the address or you will lose access to this account.
-    </p>
-    <p>
-        <b>Rules (Subject to Change)</b><br>
-        <ul>
-          <li>
-          You are permitted to post new topics to the forum. After review by the host they may be made visible to other members.
-          </li>
-          <li>
-          You are permitted to post comments on topics that are visible to you. After review by the host they may be made visible to other members.
-          </li>
-        </ul>
-    </p>
-    <p>
-        <b>Disclaimer</b><br>
-        This website is not affiliated with any hacker collective and does not facilitate illegal behaviour.
-        The purpose of this website is to develop and incentivize reliable communications and effective governance
-        among anonymous, unreliable, and untrusted members. The project status is <i>experimental</i>.
-    </p>
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>Scaffolding</h1>
+    <p class="lead">Bootstrap is built on responsive 12-column grids, layouts, and components.</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="row">
+    <div class="span3 bs-docs-sidebar">
+      <ul class="nav nav-list bs-docs-sidenav">
+        <li><a href="#download-bootstrap"><i class="icon-chevron-right"></i> Download</a></li>
+        <li><a href="#file-structure"><i class="icon-chevron-right"></i> File structure</a></li>
+        <li><a href="#contents"><i class="icon-chevron-right"></i> What's included</a></li>
+        <li><a href="#html-template"><i class="icon-chevron-right"></i> HTML template</a></li>
+        <li><a href="#examples"><i class="icon-chevron-right"></i> Examples</a></li>
+        <li><a href="#what-next"><i class="icon-chevron-right"></i> What next?</a></li>
+      </ul>
+    </div>
+
+    <div class="span9">
+      <section>
+        <p>
+          This is your homepage. Remember the address or you will lose access to this account.
+        </p>
+        <p>
+          <b>Rules (Subject to Change)</b><br>
+          <ul>
+            <li>
+              You are permitted to post new topics to the forum. After review by the host they may be made visible to other members.
+            </li>
+            <li>
+              You are permitted to post comments on topics that are visible to you. After review by the host they may be made visible to other members.
+            </li>
+          </ul>
+        </p>
+        <p>
+          <b>Disclaimer</b><br>
+          This website is not affiliated with any hacker collective and does not facilitate illegal behaviour.
+          The purpose of this website is to develop and incentivize reliable communications and effective governance
+          among anonymous, unreliable, and untrusted members. The project status is <i>experimental</i>.
+        </p>
+      </section>
+    </div>
+
+  </div>
+</div>
 {% end %}

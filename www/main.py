@@ -16,10 +16,10 @@ settings = dict(
 )
 
 application = tornado.web.Application( [
-    ( "^/recruit",                                 controllers.recruit      ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)",               controllers.index        ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/forum",         controllers.forum        ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/forum/create",  controllers.forum_create ),
+    ( "^/recruit/(?P<token>.*)",                                    controllers.recruit      ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)",                                controllers.index        ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/bbs",                            controllers.bbs          ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/wiki/(?P<page>.*)",              controllers.wiki         ),
 ], **settings )
 
 
