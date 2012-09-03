@@ -16,9 +16,8 @@ settings = dict(
 )
 
 application = tornado.web.Application( [
-    ( "^/recruit/(?P<token>.*)",                                    controllers.recruit      ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)",                                controllers.index        ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/bbs",                            controllers.bbs          ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/bulletin",                       controllers.bulletin     ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/wiki/(?P<page>.*)",              controllers.wiki         ),
 ], **settings )
 

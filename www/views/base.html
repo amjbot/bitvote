@@ -21,7 +21,7 @@
           <a class="brand" href="http://twitter.github.com/bootstrap/">Bootstrap</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="{% if not (request.path.endswith("/bulletin") or request.path.endswith("/wiki")) %}active{% end %}">
+              <li class="{% if not (request.path.endswith("/bulletin") or request.path.endswith("/wiki") or request.path.endswith("/web") or request.path.endswith("/profile")) %}active{% end %}">
                 <a href="/{{ access }}">Home</a>
               </li>
               <li class="{% if request.path.endswith("/bulletin") %}active{% end %}">
@@ -29,6 +29,12 @@
               </li>
               <li class="{% if request.path.endswith("/wiki") %}active{% end %}">
                 <a href="/{{ access }}/wiki">Wiki 0:00</a>
+              </li>
+              <li class="{% if request.path.endswith("/web") %}active{% end %}">
+                <a href="/{{ access }}/web">Web 0:00</a>
+              </li>
+              <li class="{% if request.path.endswith("/profile") %}active{% end %}">
+                <a href="/{{ access }}/profile">Profile 0:00</a>
               </li>
             </ul>
           </div>
