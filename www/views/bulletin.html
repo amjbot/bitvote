@@ -47,14 +47,5 @@
       </div>
     </div>
   </div>
-
-
-
-      {# for bullet in bulletin %}
-        <li class="active"><a href="/{{ access }}/bulletin"><i class="icon icon-chevron-right"></i> Compose</a></li>
-        <li><a href="/{{ access }}/bulletin/{{ bullet.md5 }}"><i class="icon icon-info-sign"></i> {{ bullet.title }}</a></li>
-      {% end #}
-
-  </div>
 </div>
 {% end %}

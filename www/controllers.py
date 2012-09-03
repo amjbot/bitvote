@@ -33,7 +33,8 @@ class wiki( tornado.web.RequestHandler ):
 
 class web( tornado.web.RequestHandler ):
     def get( self, access ):
-        self.render( "web.html", access=access )
+        result_set = []
+        self.render( "web.html", access=access, result_set=result_set )
     def post( self ):
         pass
 
@@ -43,6 +44,4 @@ class profile( tornado.web.RequestHandler ):
         self.render( "profile.html", access=access )
     def post( self ):
         pass
-
-
 

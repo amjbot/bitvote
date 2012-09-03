@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
   <head>
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
@@ -21,13 +22,13 @@
           <a class="brand" href="http://twitter.github.com/bootstrap/">Bootstrap</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="{% if not (request.path.endswith("/bulletin") or request.path.endswith("/wiki") or request.path.endswith("/web") or request.path.endswith("/profile")) %}active{% end %}">
+              <li class="{% if not (request.path.endswith("/bulletin") or "/wiki/" in request.path or request.path.endswith("/web") or request.path.endswith("/profile")) %}active{% end %}">
                 <a href="/{{ access }}">Home</a>
               </li>
               <li class="{% if request.path.endswith("/bulletin") %}active{% end %}">
                 <a href="/{{ access }}/bulletin">Bulletin 0:00</a>
               </li>
-              <li class="{% if request.path.endswith("/wiki") %}active{% end %}">
+              <li class="{% if "/wiki/" in request.path %}active{% end %}">
                 <a href="/{{ access }}/wiki/Index">Wiki 0:00</a>
               </li>
               <li class="{% if request.path.endswith("/web") %}active{% end %}">
