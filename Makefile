@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-restart:
+restart: tar
 	sudo supervisorctl restart all
 
 status:
@@ -8,6 +8,10 @@ status:
 
 stop:
 	sudo supervisorctl stop all
+
+tar:
+	tar -czf source.tar.gz etc www
+	mv -f source.tar.gz www/static/tar/source.tar.gz
 
 reset-database:
 	mysql -u root -proot root < etc/schema.sql
