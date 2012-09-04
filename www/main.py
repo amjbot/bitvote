@@ -20,7 +20,7 @@ application = tornado.web.Application( [
     ( "^/(?P<access>[_0-9a-zA-Z]+)/bulletin",                       controllers.bulletin     ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/wiki/(?P<page>.*)",              controllers.wiki         ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/web",                            controllers.web          ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/profile",                        controllers.profile      ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/private",                        controllers.private      ),
 ], **settings )
 
 

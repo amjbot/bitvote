@@ -39,9 +39,9 @@ class web( tornado.web.RequestHandler ):
         pass
 
 
-class profile( tornado.web.RequestHandler ):
+class private( tornado.web.RequestHandler ):
     def get( self, access ):
-        self.render( "profile.html", access=access )
+        self.render( "private.html", access=access )
     def post( self ):
         pass
 
