@@ -9,7 +9,6 @@
 </header>
 
 <div class="container">
-
   <div class="row">
     <div class="span3 bs-docs-sidebar nav" id="myTab">
       <ul class="nav nav-list bs-docs-sidenav">
@@ -21,16 +20,15 @@
         <li><a href="#trade" data-toggle="tab"><i class="icon icon-chevron-right"></i> Trade</a></li>
       </ul>
     </div>
-
     <div id="myTabContent" class="span9 tab-content">
 
       <div class="tab-pane fade active in" id="alias">
         <section>
-          <ul id="myTabAlias" class="nav nav-tabs">
-            <li class="active"><a href="#alias-view" data-toggle="tab">Alias</a></li>
+          <ul id="tab-alias" class="nav nav-tabs">
+            <li class="active"><a href="#alias-view" data-toggle="tab">View</a></li>
             <li class=""><a href="#alias-edit" data-toggle="tab">Edit</a></li>
           </ul>
-          <div id="myTabContentAlias" class="tab-content">
+          <div id="tab-alias-content" class="tab-content">
             <div class="tab-pane fade active in" id="alias-view">
               <h2>Alias Content</h2>
             </div>
@@ -43,31 +41,90 @@
 
       <div class="tab-pane fade" id="messages">
         <section>
-          <legend>Messages</legend>
+          <ul id="tab-messages" class="nav nav-tabs">
+            <li class="active"><a href="#messages-view" data-toggle="tab">View</a></li>
+            <li class=""><a href="#messages-compose" data-toggle="tab">Compose</a></li>
+          </ul>
+          <div id="tab-messages-content" class="tab-content">
+            <div class="tab-pane fade active in" id="messages-view">
+              <h2>Messages Content</h2>
+            </div>
+            <div class="tab-pane fade" id="messages-compose">
+              <h2>Edit Messages Content</h2>
+            </div>
+          </div>
         </section>
       </div>
+
       <div class="tab-pane fade" id="documents">
         <section>
-          <legend>Documents</legend>
+          <ul id="tab-documents" class="nav nav-tabs">
+            <li class="active"><a href="#documents-view" data-toggle="tab">View</a></li>
+            <li class=""><a href="#documents-edit" data-toggle="tab">Edit</a></li>
+          </ul>
+          <div id="tab-documents-content" class="tab-content">
+            <div class="tab-pane fade active in" id="documents-view">
+              <h2>Documents Content</h2>
+            </div>
+            <div class="tab-pane fade" id="documents-edit">
+              <h2>Edit Documents Content</h2>
+            </div>
+          </div>
         </section>
       </div>
+
       <div class="tab-pane fade" id="timebank">
         <section>
-          <legend>Time Bank</legend>
+          <ul id="tab-timebank" class="nav nav-tabs">
+            <li class="active"><a href="#timebank-accounts" data-toggle="tab">Accounts</a></li>
+            <li class=""><a href="#timebank-transfer" data-toggle="tab">Transfer</a></li>
+          </ul>
+          <div id="tab-timebank-content" class="tab-content">
+            <div class="tab-pane fade active in" id="timebank-accounts">
+              <h2>Time Bank Accounts</h2>
+            </div>
+            <div class="tab-pane fade" id="timebank-transfer">
+              <h2>Transfer Time Bank Content</h2>
+            </div>
+          </div>
         </section>
       </div>
+
       <div class="tab-pane fade" id="transport">
         <section>
-          <legend>Transport</legend>
+          <ul id="tab-transport" class="nav nav-tabs">
+            <li class="active"><a href="#transport-import" data-toggle="tab">Import</a></li>
+            <li class=""><a href="#transport-export" data-toggle="tab">Export</a></li>
+          </ul>
+          <div id="tab-transport-content" class="tab-content">
+            <div class="tab-pane fade active in" id="transport-import">
+              <h2>Import Data</h2>
+            </div>
+            <div class="tab-pane fade" id="transport-export">
+              <h2>Export Data</h2>
+            </div>
+          </div>
         </section>
       </div>
+
       <div class="tab-pane fade" id="trade">
         <section>
-          <legend>Trade</legend>
+          <ul id="tab-trade" class="nav nav-tabs">
+            <li class="active"><a href="#trade-open" data-toggle="tab">Open</a></li>
+            <li class=""><a href="#trade-propose" data-toggle="tab">Propose</a></li>
+          </ul>
+          <div id="tab-trade-content" class="tab-content">
+            <div class="tab-pane fade active in" id="trade-open">
+              <h2>View Trade Opportunities</h2>
+            </div>
+            <div class="tab-pane fade" id="trade-propose">
+              <h2>Propose a Trade</h2>
+            </div>
+          </div>
         </section>
       </div>
-    </div>
 
+    </div>
   </div>
 </div>
 {% end %}
