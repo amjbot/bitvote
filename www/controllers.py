@@ -15,8 +15,8 @@ class index( tornado.web.RequestHandler ):
 
 class bulletin( tornado.web.RequestHandler ):
     def get( self, access ):
-        bulletin = [ tornado.database.Row({"title":"test", "body":"asdfasdfasdf"}),
-                     tornado.database.Row({"title":"test", "body":"asdfasdfasdf"}) ]
+        bulletin = [ tornado.database.Row({"title":"test", "body":"asdfasdfasdf", "author":"Mr. Big"}),
+                     tornado.database.Row({"title":"test", "body":"asdfasdfasdf", "author":"Mr. Big"}) ]
         self.render( "bulletin.html", access=access, bulletin=bulletin )
 
 
