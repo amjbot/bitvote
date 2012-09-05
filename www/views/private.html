@@ -27,12 +27,23 @@
           <div id="tab-alias-content" class="tab-content">
             <div class="tab-pane fade active in" id="alias-view">
               <p><b>Public Fingerprint</b>: 0123456789</p>
-              <p><b>Nickname</b>: Nocturnal Lemongrass</p>
+              <p><b>Code name</b>: Nocturnal Lemongrass</p>
               <p><b>Location</b>: Ubiquitous</p>
-              <p><b>Description:</b></p><p>Text and stuff here makes it sound good</p>
+              <p><b>Profile:</b></p><p>Text and stuff here makes it sound good</p>
             </div>
             <div class="tab-pane fade" id="alias-edit">
-              <h2>Edit Alias Content</h2>
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="codename" placeholder="Code name">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="location" placeholder="Location">
+                </fieldset>
+                <fieldset>
+                  <textarea class="span6" name="profile" rows="13" placeholder="Profile"></textarea>
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
@@ -41,16 +52,41 @@
       <div class="tab-pane fade" id="badges">
         <section>
           <ul id="tab-badges" class="nav nav-tabs">
-            <li class="active"><a href="#badges-view" data-toggle="tab">View</a></li>
+            <li class="active"><a href="#badges-credentials" data-toggle="tab">Credentials</a></li>
+            <li class=""><a href="#badges-students" data-toggle="tab">Students</a></li>
             <li class=""><a href="#badges-issue" data-toggle="tab">Issue</a></li>
+            <li class=""><a href="#badges-revoke" data-toggle="tab">Revoke</a></li>
           </ul>
           <div id="tab-badges-content" class="tab-content">
-            <div class="tab-pane fade active in" id="badges-view">
-              <p><b>Flower Arrangement (Level 1)</b> awarded by Jim Bob Tittlesworth III</p>
-              <p><b>Flower Arrangement (Level 2)</b> awarded by Jim Bob Tittlesworth III</p>
+            <div class="tab-pane fade active in" id="badges-credentials">
+              <p><b>Flower Arrangement (Level 1)</b> awarded by <span title="Jim Bob Tittlesworth III">3456789795467</span></p>
+              <p><b>Flower Arrangement (Level 2)</b> awarded by <span title="Jim Bob Tittlesworth III">3456789795467</span></p>
+            </div>
+            <div class="tab-pane fade" id="badges-students">
+              <p><b>Paper Folding (Level 1)</b> awarded to <span title="Jim Bob Tittlesworth III">3456789795467</span></p>
+              <p><b>Paper Folding (Level 2)</b> awarded to <span title="Jim Bob Tittlesworth III">3456789795467</span></p>
             </div>
             <div class="tab-pane fade" id="badges-issue">
-              <h2>Issue a Badge</h2>
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="fingerprint" placeholder="Student fingerprint">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="credential" placeholder="Credential">
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+              </form>
+            </div>
+            <div class="tab-pane fade" id="badges-revoke">
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="fingerprint" placeholder="Student fingerprint">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="credential" placeholder="Credential">
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
