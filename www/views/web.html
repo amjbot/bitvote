@@ -12,9 +12,34 @@
         <input class="span9" type="text" name="query" data-provide="typeahead" data-items="4" placeholder="Query"
           data-source="[&quot;Alabama&quot;,&quot;Alaska&quot;,&quot;Arizona&quot;,&quot;Arkansas&quot;,&quot;California&quot;,&quot;Colorado&quot;,&quot;Connecticut&quot;,&quot;Delaware&quot;,&quot;Florida&quot;,&quot;Georgia&quot;,&quot;Hawaii&quot;,&quot;Idaho&quot;,&quot;Illinois&quot;,&quot;Indiana&quot;,&quot;Iowa&quot;,&quot;Kansas&quot;,&quot;Kentucky&quot;,&quot;Louisiana&quot;,&quot;Maine&quot;,&quot;Maryland&quot;,&quot;Massachusetts&quot;,&quot;Michigan&quot;,&quot;Minnesota&quot;,&quot;Mississippi&quot;,&quot;Missouri&quot;,&quot;Montana&quot;,&quot;Nebraska&quot;,&quot;Nevada&quot;,&quot;New Hampshire&quot;,&quot;New Jersey&quot;,&quot;New Mexico&quot;,&quot;New York&quot;,&quot;North Dakota&quot;,&quot;North Carolina&quot;,&quot;Ohio&quot;,&quot;Oklahoma&quot;,&quot;Oregon&quot;,&quot;Pennsylvania&quot;,&quot;Rhode Island&quot;,&quot;South Carolina&quot;,&quot;South Dakota&quot;,&quot;Tennessee&quot;,&quot;Texas&quot;,&quot;Utah&quot;,&quot;Vermont&quot;,&quot;Virginia&quot;,&quot;Washington&quot;,&quot;West Virginia&quot;,&quot;Wisconsin&quot;,&quot;Wyoming&quot;]" autocomplete="off">
         <input class="span3" type="text" name="labor" placeholder="Visibility">
-        <div id="search_results">
-          {% for w in result_set %}
-          {% end %}
+        <section><div class="alert alert-info">Showing 2 of 2 results.</div></section>
+        <div class="accordion" id="accordion1">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse0">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">John James Jameson</span>
+                Badass McGrim
+              </a>
+            </div>
+            <div id="collapse0" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                Wild west romantic comedy documentary at its best.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse1">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">asdfasdf</span>
+                asdfasdfasdf
+              </a>
+            </div>
+            <div id="collapse1" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                asdfasdfasdfasdfasdfasfd
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="tab-pane fade" id="share">
