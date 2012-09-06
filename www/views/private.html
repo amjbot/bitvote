@@ -69,7 +69,7 @@
             <div class="tab-pane fade" id="badges-issue">
               <form>
                 <fieldset>
-                  <input class="span4" type="text" name="fingerprint" placeholder="Student fingerprint">
+                  <input class="span4" type="text" name="fingerprint" placeholder="Student">
                 </fieldset>
                 <fieldset>
                   <input class="span4" type="text" name="credential" placeholder="Credential">
@@ -80,7 +80,7 @@
             <div class="tab-pane fade" id="badges-revoke">
               <form>
                 <fieldset>
-                  <input class="span4" type="text" name="fingerprint" placeholder="Student fingerprint">
+                  <input class="span4" type="text" name="fingerprint" placeholder="Student">
                 </fieldset>
                 <fieldset>
                   <input class="span4" type="text" name="credential" placeholder="Credential">
@@ -138,7 +138,7 @@
             <div class="tab-pane fade" id="contacts-remember">
               <form>
                 <fieldset>
-                  <input class="span4" type="text" name="fingerprint" placeholder="Contact fingerprint">
+                  <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
                 </fieldset>
                 <fieldset>
                   <input class="span4" type="text" name="tags" placeholder="Keywords">
@@ -152,7 +152,7 @@
             <div class="tab-pane fade" id="contacts-forget">
               <form>
                 <fieldset>
-                  <input class="span4" type="text" name="fingerprint" placeholder="Contact fingerprint">
+                  <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
                 </fieldset>
                 <button type="submit" class="btn">Submit</button>
               </form>
@@ -169,10 +169,48 @@
           </ul>
           <div id="tab-messages-content" class="tab-content">
             <div class="tab-pane fade active in" id="messages-view">
-              <h2>Messages Content</h2>
+              <div class="accordion" id="accordion-messages">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-messages0">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                      Hello, can you meet me for coffee today?
+                    </a>
+                  </div>
+                  <div id="collapse-messages0" class="accordion-body collapse" style="height: 0px; ">
+                    <div class="accordion-inner">
+                      <p>Wanted to talk about prospects for ..............</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-messages1">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                      Application for renewal of gym membership.
+                    </a>
+                  </div>
+                  <div id="collapse-messages1" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                     <p>huh?</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="tab-pane fade" id="messages-compose">
-              <h2>Edit Messages Content</h2>
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="fingerprint" placeholder="Recipient">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="tags" placeholder="Title">
+                </fieldset>
+                <fieldset>
+                  <textarea class="span6" name="description" rows="13" placeholder="Description"></textarea>
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
@@ -182,14 +220,35 @@
         <section>
           <ul id="tab-documents" class="nav nav-tabs">
             <li class="active"><a href="#documents-view" data-toggle="tab">View</a></li>
-            <li class=""><a href="#documents-edit" data-toggle="tab">Edit</a></li>
+            <li class=""><a href="#documents-remove" data-toggle="tab">Remove</a></li>
           </ul>
           <div id="tab-documents-content" class="tab-content">
+
             <div class="tab-pane fade active in" id="documents-view">
-              <h2>Documents Content</h2>
+              <div class="accordion" id="accordion-documents">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-documents" href="#collapse-documents0">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354 <i class="icon-arrow-right"></i> 124233328</span>
+                      Hello, can you meet me for coffee today?
+                    </a>
+                  </div>
+                  <div id="collapse-documents0" class="accordion-body collapse" style="height: 0px; ">
+                    <div class="accordion-inner">
+                      <p><b>body:</b> asdf asdf asdf</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="tab-pane fade" id="documents-edit">
-              <h2>Edit Documents Content</h2>
+
+            <div class="tab-pane fade" id="documents-remove">
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="hash" placeholder="Document key">
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
@@ -203,10 +262,25 @@
           </ul>
           <div id="tab-timebank-content" class="tab-content">
             <div class="tab-pane fade active in" id="timebank-accounts">
-              <h2>Time Bank Accounts</h2>
+              <p><b style="float: left; height: 20px; width: 185px; overflow: hidden;">{{ access }}/bulletin</b> 0:00</p>
+              <p><b style="float: left; height: 20px; width: 185px; overflow: hidden;">{{ access }}/wiki</b> 0:00</p>
+              <p><b style="float: left; height: 20px; width: 185px; overflow: hidden;">{{ access }}/web</b> 0:00</p>
+              <p><b style="float: left; height: 20px; width: 185px; overflow: hidden;">{{ access }}/private</b> 0:00</p>
             </div>
             <div class="tab-pane fade" id="timebank-transfer">
-              <h2>Transfer Time Bank Content</h2>
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="recipient" placeholder="Recipient">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="currency" placeholder="Currency">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="amount" placeholder="Amount">
+                </fieldset>
+                <section><div class="alert alert-info">A 0.3% transaction tax will be added to the final amount.</div></section>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
@@ -220,10 +294,14 @@
           </ul>
           <div id="tab-transport-content" class="tab-content">
             <div class="tab-pane fade active in" id="transport-import">
-              <h2>Import Data</h2>
+              <fieldset>
+                <input type="file" name="file" class="span4" placeholder="Filename">
+              </fieldset>
+              <button type="submit" class="btn">Submit</button>
             </div>
             <div class="tab-pane fade" id="transport-export">
-              <h2>Export Data</h2>
+              <div class="alert alert-info">A total of 25 records are available for download.</div>
+              <button type="submit" class="btn">Download</button>
             </div>
           </div>
         </section>
@@ -237,10 +315,58 @@
           </ul>
           <div id="tab-trade-content" class="tab-content">
             <div class="tab-pane fade active in" id="trade-open">
-              <h2>View Trade Opportunities</h2>
+
+              <div class="accordion" id="accordion-trades">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-trades" href="#collapse-trades0">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                      Hello, can you meet me for coffee today?
+                    </a>
+                  </div>
+                  <div id="collapse-trades0" class="accordion-body collapse" style="height: 0px; ">
+                    <div class="accordion-inner">
+                      <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Gain:</span> 0:03 wiki hours</p>
+                      <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Lose:</span> 0:02 web hours</p>
+                      <form>
+                        <button type="submit" class="btn">Accept</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-trades1">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                      Application for renewal of gym membership.
+                    </a>
+                  </div>
+                  <div id="collapse-trades1" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                      <p>Gain: Gym Member (Level 1) credential</p>
+                      <p>Lose: 0:03 personal hours</p>
+                      <form>
+                        <button type="submit" class="btn">Accept</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
             <div class="tab-pane fade" id="trade-propose">
-              <h2>Propose a Trade</h2>
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="fingerprint" placeholder="Recipient">
+                </fieldset>
+                <fieldset>
+                  <input class="span4" type="text" name="description" placeholder="Description">
+                </fieldset>
+                <fieldset>
+                  <textarea class="span6" name="conditions" rows="13" placeholder="Conditions"></textarea>
+                </fieldset>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
@@ -254,10 +380,43 @@
           </ul>
           <div id="tab-parent-content" class="tab-content">
             <div class="tab-pane fade active in" id="parent-children">
-              <h2>Monitor Children</h2>
+              <div class="accordion" id="accordion-children">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-children" href="#collapse-children0">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                      Hank
+                    </a>
+                  </div>
+                  <div id="collapse-children0" class="accordion-body collapse" style="height: 0px; ">
+                    <div class="accordion-inner">
+                      <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Location:</span> New Guinea</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-children1">
+                      <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                      Frank
+                    </a>
+                  </div>
+                  <div id="collapse-children1" class="accordion-body collapse" style="height: 0px;">
+                    <div class="accordion-inner">
+                      <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Location:</span> Indonesia</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="tab-pane fade" id="parent-spawn">
-              <h2>Spawn a Child Account</h2>
+              <form>
+                <fieldset>
+                  <input class="span4" type="text" name="name" placeholder="Name">
+                </fieldset>
+                <div class="alert alert-info">Child rearing requires a lot of time, are you sure you want to continue?</div>
+                <button type="submit" class="btn">Submit</button>
+              </form>
             </div>
           </div>
         </section>
