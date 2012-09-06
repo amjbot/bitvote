@@ -14,9 +14,10 @@
       </div>
       <div class="tab-pane fade" id="compose">
         <form>
-          <legend>Edit "{{ page }}"</legend>
           <fieldset>
-            <textarea class="span6" name="body" rows="13" {% if not page_content %}placeholder="Page content"{% else %}value="{{ page_content }}"{% end %}></textarea>
+            <input class="span9" name="title" type="text" placeholder="Title" value="{{ page }}">
+            <input class="span3" name="voice" type="text" placeholder="Visibility">
+            <textarea class="span12" name="body" rows="13" {% if not page_content %}placeholder="Page content"{% else %}value="{{ page_content }}"{% end %}></textarea>
           </fieldset>
           <button type="submit" class="btn">Submit</button>
         </form>
