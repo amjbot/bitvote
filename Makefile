@@ -13,6 +13,9 @@ tar:
 	tar -czf source.tar.gz etc www
 	mv -f source.tar.gz www/static/tar/source.tar.gz
 
+db:
+	mysql -u root -proot root
+
 reset-database:
 	mysql -u root -proot root < etc/schema.sql
 

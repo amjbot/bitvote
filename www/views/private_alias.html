@@ -6,13 +6,14 @@
     </ul>
     <div id="tab-alias-content" class="tab-content">
       <div class="tab-pane fade active in" id="alias-view">
-        <p><b>Public Fingerprint</b>: 0123456789</p>
-        <p><b>Code name</b>: Nocturnal Lemongrass</p>
-        <p><b>Location</b>: Ubiquitous</p>
-        <p><b>Profile:</b></p><p>Text and stuff here makes it sound good</p>
+        <p><b>Public Fingerprint</b>: {{ alias.fingerprint }}</p>
+        <p><b>Code name</b>: {{ alias.codename }}</p>
+        <p><b>Location</b>: {{ alias.location }}</p>
+        <p><b>Profile:</b></p><p> {{ alias.profile }}</p>
       </div>
       <div class="tab-pane fade" id="alias-edit">
-        <form>
+        <form method="POST" action="/{{ access }}/alias-edit">
+          {% module xsrf_form_html() %}
           <fieldset>
             <input class="span4" type="text" name="codename" placeholder="Code name">
           </fieldset>
