@@ -1,0 +1,62 @@
+<div class="tab-pane fade" id="trade">
+  <section>
+    <ul id="tab-trade" class="nav nav-tabs">
+      <li class="active"><a href="#trade-open" data-toggle="tab">Open</a></li>
+      <li class=""><a href="#trade-propose" data-toggle="tab">Propose</a></li>
+    </ul>
+    <div id="tab-trade-content" class="tab-content">
+      <div class="tab-pane fade active in" id="trade-open">
+        <div class="accordion" id="accordion-trades">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-trades" href="#collapse-trades0">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                Hello, can you meet me for coffee today?
+              </a>
+            </div>
+            <div id="collapse-trades0" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Gain:</span> 0:03 wiki hours</p>
+                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Lose:</span> 0:02 web hours</p>
+                <form>
+                  <button type="submit" class="btn">Accept</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-trades1">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                Application for renewal of gym membership.
+              </a>
+            </div>
+            <div id="collapse-trades1" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <p>Gain: Gym Member (Level 1) credential</p>
+                <p>Lose: 0:03 personal hours</p>
+                <form>
+                  <button type="submit" class="btn">Accept</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="trade-propose">
+        <form>
+          <fieldset>
+            <input class="span4" type="text" name="fingerprint" placeholder="Recipient">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="description" placeholder="Description">
+          </fieldset>
+          <fieldset>
+            <textarea class="span6" name="conditions" rows="13" placeholder="Conditions"></textarea>
+          </fieldset>
+          <button type="submit" class="btn">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

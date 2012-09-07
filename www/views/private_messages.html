@@ -1,0 +1,54 @@
+<div class="tab-pane fade" id="messages">
+  <section>
+    <ul id="tab-messages" class="nav nav-tabs">
+      <li class="active"><a href="#messages-view" data-toggle="tab">View</a></li>
+      <li class=""><a href="#messages-compose" data-toggle="tab">Compose</a></li>
+    </ul>
+    <div id="tab-messages-content" class="tab-content">
+      <div class="tab-pane fade active in" id="messages-view">
+        <div class="accordion" id="accordion-messages">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-messages0">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                Hello, can you meet me for coffee today?
+              </a>
+            </div>
+            <div id="collapse-messages0" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                <p>Wanted to talk about prospects for ..............</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-messages1">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                Application for renewal of gym membership.
+              </a>
+            </div>
+            <div id="collapse-messages1" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <p>huh?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="messages-compose">
+        <form>
+          <fieldset>
+            <input class="span4" type="text" name="fingerprint" placeholder="Recipient">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="tags" placeholder="Title">
+          </fieldset>
+          <fieldset>
+            <textarea class="span6" name="description" rows="13" placeholder="Description"></textarea>
+          </fieldset>
+          <button type="submit" class="btn">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,67 @@
+<div class="tab-pane fade" id="contacts">
+  <section>
+    <ul id="tab-contacts" class="nav nav-tabs">
+      <li class="active"><a href="#contacts-view" data-toggle="tab">View</a></li>
+      <li class=""><a href="#contacts-remember" data-toggle="tab">Remember</a></li>
+      <li class=""><a href="#contacts-forget" data-toggle="tab">Forget</a></li>
+    </ul>
+    <div id="tab-contacts-content" class="tab-content">
+      <div class="tab-pane fade active in" id="contacts-view">
+        <div class="accordion" id="contacts-accordion">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-contacts" href="#collapse-contacts0">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                Ellen Haynesworth
+              </a>
+            </div>
+            <div id="collapse-contacts0" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                <p><b>Location:</b> Somewhere</p>
+                <p><b>Keywords:</b> Friend, Partner, Classmate</p>
+                <p>Description of who this person is.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-contacts" href="#collapse-contacts1">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                Jonathon Haynesworth
+              </a>
+            </div>
+            <div id="collapse-contacts1" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                <p><b>Location:</b> Somewhere</p>
+                <p><b>Keywords:</b> Acquaintance</p>
+                <p>Description of who this person is.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="contacts-remember">
+         <form>
+           <fieldset>
+             <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
+           </fieldset>
+           <fieldset>
+             <input class="span4" type="text" name="tags" placeholder="Keywords">
+           </fieldset>
+           <fieldset>
+             <textarea class="span6" name="description" rows="13" placeholder="Description"></textarea>
+           </fieldset>
+           <button type="submit" class="btn">Submit</button>
+         </form>
+      </div>
+      <div class="tab-pane fade" id="contacts-forget">
+         <form>
+           <fieldset>
+             <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
+           </fieldset>
+           <button type="submit" class="btn">Submit</button>
+         </form>
+      </div>
+    </div>
+  </section>
+</div>

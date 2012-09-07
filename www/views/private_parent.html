@@ -1,0 +1,49 @@
+<div class="tab-pane fade" id="parent">
+  <section>
+    <ul id="tab-parent" class="nav nav-tabs">
+      <li class="active"><a href="#parent-children" data-toggle="tab">Children</a></li>
+      <li class=""><a href="#parent-spawn" data-toggle="tab">Spawn</a></li>
+    </ul>
+    <div id="tab-parent-content" class="tab-content">
+      <div class="tab-pane fade active in" id="parent-children">
+        <div class="accordion" id="accordion-children">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-children" href="#collapse-children0">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
+                Hank
+              </a>
+            </div>
+            <div id="collapse-children0" class="accordion-body collapse" style="height: 0px; ">
+              <div class="accordion-inner">
+                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Location:</span> New Guinea</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-children" href="#collapse-children1">
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
+                Frank
+              </a>
+            </div>
+            <div id="collapse-children1" class="accordion-body collapse" style="height: 0px;">
+              <div class="accordion-inner">
+                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Location:</span> Indonesia</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="parent-spawn">
+        <form>
+          <fieldset>
+            <input class="span4" type="text" name="name" placeholder="Name">
+          </fieldset>
+          <div class="alert alert-info">Child rearing requires a lot of time, are you sure you want to continue?</div>
+          <button type="submit" class="btn">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
