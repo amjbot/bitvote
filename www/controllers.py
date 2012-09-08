@@ -4,30 +4,54 @@ import random
 import string
 import json
 import hashlib
+import sys
 
 
 db = tornado.database.Connection(host="localhost",user="root",database="root",password="root")
 
 
+def get_fingerprint( access ):
+    return hashlib.md5(access).hexdigest()
 def get_alias( access ):
-    alias = db.get("SELECT * FROM speech WHERE source=%s and intent='alias' ORDER BY voice DESC LIMIT 1", access)
+    fingerprint = get_fingerprint(access)
+    alias = db.get("SELECT * FROM speech WHERE source=%s and intent='alias' ORDER BY voice DESC LIMIT 1", fingerprint)
     alias = tornado.database.Row(json.loads(alias.content) if alias else {
         "codename": "",
         "location": "",
         "profile": "",
     })
-    alias.fingerprint = hashlib.md5(access).hexdigest()
+    alias.fingerprint = fingerprint
     return alias
 def get_credentials( alias ):
+    credentials = db.query("SELECT s1.source as mentor,s1.target as student,s1.content as credential,s2.content as alias " +
+        "FROM speech AS s1 JOIN speech AS s2 ON s1.source=s2.source AND (s2.intent='alias' OR s2.intent IS NULL)" +
+        "WHERE s1.target=%s and s1.intent='badge'", alias.fingerprint)
+    for c in credentials:
+        c.update( json.loads(c.alias) if c.alias else {"codename":"","location":"","profile":""} )
+    return credentials
+
     credentials = db.query("SELECT * FROM speech WHERE target=%s and intent='badge'", alias.fingerprint)
     return [ tornado.database.Row({
         "codename": alias.codename, "fingerprint": alias.fingerprint, "credential": row.content
     }) for row in credentials ]
 def get_studentcredentials( alias ):
-    credentials = db.query("SELECT * FROM speech WHERE source=%s and intent='badge'", alias.fingerprint)
+    print >> sys.stderr, "fingerprint: " + alias.fingerprint
+    credentials = db.query("SELECT s1.source as mentor,s1.target as student,s1.content as credential,s2.content as alias " +
+        "FROM speech AS s1 JOIN speech AS s2 ON s1.target=s2.source AND (s2.intent='alias' OR s2.intent IS NULL)" +
+        "WHERE s1.source=%s and s1.intent='badge'", alias.fingerprint)
+    for c in credentials:
+        c.update( json.loads(c.alias) if c.alias else {"codename":"","location":"","profile":""} )
+    return credentials
+
+def get_contacts( alias ):
+    return
+    contacts = db.query("SELECT * FROM speech WHERE source=%s and intent='contact'", alias.fingerprint)
     return [ tornado.database.Row({
         "codename": alias.codename, "fingerprint": alias.fingerprint, "credential": row.content
     }) for row in credentials ]
+
+    db.execute( "INSERT speech(source,target,intent,content) VALUES(%s,%s,'contact',%s)", alias.fingerprint, contact_fingerprint, content )
+    
 
 class index( tornado.web.RequestHandler ):
     def get( self, access ):
@@ -64,8 +88,6 @@ class web( tornado.web.RequestHandler ):
             raise tornado.web.HTTPError(404)
         result_set = []
         self.render( "web.html", access=access, result_set=result_set )
-    def post( self ):
-        pass
 
 
 class private( tornado.web.RequestHandler ):
@@ -75,7 +97,9 @@ class private( tornado.web.RequestHandler ):
         alias = get_alias(access)
         credentials = get_credentials(alias)
         student_credentials = get_studentcredentials(alias)
-        self.render( "private.html", access=access, alias=alias, credentials=credentials, student_credentials=student_credentials )
+        contacts = None #get_contacts(alias)
+        self.render( "private.html", access=access, alias=alias, credentials=credentials,
+            student_credentials=student_credentials, contacts=contacts )
 
 
 class alias_edit( tornado.web.RequestHandler ):
@@ -85,9 +109,11 @@ class alias_edit( tornado.web.RequestHandler ):
             "location": self.get_argument("location",""),
             "profile": self.get_argument("profile",""),
         })
-        db.execute( "DELETE FROM speech WHERE source=%s AND intent='alias'", access )
-        db.execute( "INSERT speech(source,intent,content) VALUES(%s,'alias',%s)", access, alias)
+        fingerprint = get_fingerprint(access)
+        db.execute( "DELETE FROM speech WHERE source=%s AND intent='alias'", fingerprint )
+        db.execute( "INSERT speech(source,intent,content) VALUES(%s,'alias',%s)", fingerprint, alias)
         self.redirect("/"+access+"/private")
+
 
 class badges_issue( tornado.web.RequestHandler ):
     def post( self, access ):
@@ -99,11 +125,36 @@ class badges_issue( tornado.web.RequestHandler ):
             db.execute( "INSERT speech(source,target,intent,content) VALUES(%s,%s,'badge',%s)", alias.fingerprint, fingerprint, credential )
         self.redirect("/"+access+"/private")
 
+
 class badges_revoke( tornado.web.RequestHandler ):
     def post( self, access ):
         alias = get_alias(access)
         fingerprint = self.get_argument("fingerprint")
         credential = self.get_argument("credential")
         db.execute( "DELETE FROM speech WHERE source=%s AND target=%s AND intent='badge' AND content=%s", alias.fingerprint, fingerprint, credential )
+        self.redirect("/"+access+"/private")
+
+
+class contacts_remember( tornado.web.RequestHandler ):
+    def post( self, access ):
+        alias = get_alias(access)
+        contact_fingerprint = self.get_argument("fingerprint")
+        tags = self.get_argument("tags","")
+        description = self.get_argument("description","")
+        content = json.dumps({
+            "tags": tags,
+            "description": description,
+        })
+        if not db.get("SELECT * FROM speech WHERE source=%s AND target=%s AND intent='contact' AND content=%s",
+            alias.fingerprint, contact_fingerprint, content):
+            db.execute( "INSERT speech(source,target,intent,content) VALUES(%s,%s,'contact',%s)", alias.fingerprint, contact_fingerprint, content )
+        self.redirect("/"+access+"/private")
+
+
+class contacts_forget( tornado.web.RequestHandler ):
+    def post( self, access ):
+        alias = get_alias(access)
+        contact_fingerprint = self.get_argument("fingerprint")
+        db.execute("DELETE FROM speech WHERE source=%s and target=%s and intent='contact'", alias.fingerprint, contact_fingerprint)
         self.redirect("/"+access+"/private")
 

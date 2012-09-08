@@ -8,40 +8,28 @@
     <div id="tab-contacts-content" class="tab-content">
       <div class="tab-pane fade active in" id="contacts-view">
         <div class="accordion" id="contacts-accordion">
+          {% for c in [] %}
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#contacts-accordion" href="#collapse-contacts0">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
-                Ellen Haynesworth
+                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">{{ c.fingerprint }}</span>
+                {{ c.codename }}
               </a>
             </div>
-            <div id="collapse-contacts0" class="accordion-body collapse" style="height: 0px; ">
+            <div id="collapse-contacts0" class="accordion-body collapse" style="height: 0px;">
               <div class="accordion-inner">
-                <p><b>Location:</b> Somewhere</p>
-                <p><b>Keywords:</b> Friend, Partner, Classmate</p>
-                <p>Description of who this person is.</p>
+                <p><b>Location:</b> {{ c.location }}</p>
+                <p><b>Keywords:</b> {{ c.keywords }}</p>
+                <p>{{ c.description }}</p>
               </div>
             </div>
           </div>
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#contacts-accordion" href="#collapse-contacts1">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
-                Jonathon Haynesworth
-              </a>
-            </div>
-            <div id="collapse-contacts1" class="accordion-body collapse" style="height: 0px; ">
-              <div class="accordion-inner">
-                <p><b>Location:</b> Somewhere</p>
-                <p><b>Keywords:</b> Acquaintance</p>
-                <p>Description of who this person is.</p>
-              </div>
-            </div>
-          </div>
+          {% end %}
         </div>
       </div>
       <div class="tab-pane fade" id="contacts-remember">
-         <form>
+         <form method="POST" action="/{{ access }}/contacts-remember" >
+           {% module xsrf_form_html() %}
            <fieldset>
              <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
            </fieldset>
@@ -55,7 +43,8 @@
          </form>
       </div>
       <div class="tab-pane fade" id="contacts-forget">
-         <form>
+         <form method="POST" action="/{{ access }}/contacts-forget" >
+           {% module xsrf_form_html() %}
            <fieldset>
              <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
            </fieldset>
