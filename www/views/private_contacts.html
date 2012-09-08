@@ -8,11 +8,11 @@
     <div id="tab-contacts-content" class="tab-content">
       <div class="tab-pane fade active in" id="contacts-view">
         <div class="accordion" id="contacts-accordion">
-          {% for c in [] %}
+          {% for c in contacts %}
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#contacts-accordion" href="#collapse-contacts0">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">{{ c.fingerprint }}</span>
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;">{{ c.contact }}</span>
                 {{ c.codename }}
               </a>
             </div>
@@ -20,6 +20,7 @@
               <div class="accordion-inner">
                 <p><b>Location:</b> {{ c.location }}</p>
                 <p><b>Keywords:</b> {{ c.keywords }}</p>
+                <p class="muted">{{ c.profile }}</p>
                 <p>{{ c.description }}</p>
               </div>
             </div>
@@ -34,7 +35,7 @@
              <input class="span4" type="text" name="fingerprint" placeholder="Fingerprint">
            </fieldset>
            <fieldset>
-             <input class="span4" type="text" name="tags" placeholder="Keywords">
+             <input class="span4" type="text" name="keywords" placeholder="Keywords">
            </fieldset>
            <fieldset>
              <textarea class="span6" name="description" rows="13" placeholder="Description"></textarea>

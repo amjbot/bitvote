@@ -30,12 +30,7 @@ def get_credentials( alias ):
         c.update( json.loads(c.alias) if c.alias else {"codename":"","location":"","profile":""} )
     return credentials
 
-    credentials = db.query("SELECT * FROM speech WHERE target=%s and intent='badge'", alias.fingerprint)
-    return [ tornado.database.Row({
-        "codename": alias.codename, "fingerprint": alias.fingerprint, "credential": row.content
-    }) for row in credentials ]
 def get_studentcredentials( alias ):
-    print >> sys.stderr, "fingerprint: " + alias.fingerprint
     credentials = db.query("SELECT s1.source as mentor,s1.target as student,s1.content as credential,s2.content as alias " +
         "FROM speech AS s1 JOIN speech AS s2 ON s1.target=s2.source AND (s2.intent='alias' OR s2.intent IS NULL)" +
         "WHERE s1.source=%s and s1.intent='badge'", alias.fingerprint)
@@ -44,14 +39,16 @@ def get_studentcredentials( alias ):
     return credentials
 
 def get_contacts( alias ):
-    return
-    contacts = db.query("SELECT * FROM speech WHERE source=%s and intent='contact'", alias.fingerprint)
-    return [ tornado.database.Row({
-        "codename": alias.codename, "fingerprint": alias.fingerprint, "credential": row.content
-    }) for row in credentials ]
+    contacts = db.query("SELECT s1.target as contact, s2.content as alias, s1.content as s1_profile " +
+        "FROM speech AS s1 JOIN speech AS s2 ON s1.target=s2.source AND (s2.intent='alias' OR s2.intent IS NULL) " +
+        "WHERE s1.source=%s and s1.intent='contact'", alias.fingerprint)
+    for c in contacts:
+        print >> sys.stderr, c
+        c.update( json.loads(c.alias) if c.alias else {"codename":"","location":"","profile":""} )
+        c.update( json.loads(c.s1_profile) if c.s1_profile else {"keywords":"","description":""} )
+    return contacts
 
-    db.execute( "INSERT speech(source,target,intent,content) VALUES(%s,%s,'contact',%s)", alias.fingerprint, contact_fingerprint, content )
-    
+
 
 class index( tornado.web.RequestHandler ):
     def get( self, access ):
@@ -97,7 +94,7 @@ class private( tornado.web.RequestHandler ):
         alias = get_alias(access)
         credentials = get_credentials(alias)
         student_credentials = get_studentcredentials(alias)
-        contacts = None #get_contacts(alias)
+        contacts = get_contacts(alias)
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts )
 
@@ -139,10 +136,10 @@ class contacts_remember( tornado.web.RequestHandler ):
     def post( self, access ):
         alias = get_alias(access)
         contact_fingerprint = self.get_argument("fingerprint")
-        tags = self.get_argument("tags","")
+        keywords = self.get_argument("keywords","")
         description = self.get_argument("description","")
         content = json.dumps({
-            "tags": tags,
+            "keywords": keywords,
             "description": description,
         })
         if not db.get("SELECT * FROM speech WHERE source=%s AND target=%s AND intent='contact' AND content=%s",
