@@ -16,12 +16,14 @@ settings = dict(
 )
 
 application = tornado.web.Application( [
-    ( "^/(?P<access>[_0-9a-zA-Z]+)",                                controllers.index        ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/bulletin",                       controllers.bulletin     ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/wiki/(?P<page>.*)",              controllers.wiki         ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/web",                            controllers.web          ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/private",                        controllers.private      ),
-    ( "^/(?P<access>[_0-9a-zA-Z]+)/alias-edit",                     controllers.alias_edit   ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)",                               controllers.index         ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/bulletin",                      controllers.bulletin      ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/wiki/(?P<page>.*)",             controllers.wiki          ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/web",                           controllers.web           ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/private",                       controllers.private       ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/alias-edit",                    controllers.alias_edit    ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/badges-issue",                  controllers.badges_issue  ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/badges-revoke",                 controllers.badges_revoke ),
 ], **settings )
 
 

@@ -10,7 +10,7 @@ db = tornado.database.Connection(host="localhost",user="root",database="root",pa
 
 
 def get_alias( access ):
-    alias = db.get("SELECT * FROM speech WHERE source=%s and intent='alias' ORDER BY voice DESC", access)
+    alias = db.get("SELECT * FROM speech WHERE source=%s and intent='alias' ORDER BY voice DESC LIMIT 1", access)
     alias = tornado.database.Row(json.loads(alias.content) if alias else {
         "codename": "",
         "location": "",
@@ -18,7 +18,16 @@ def get_alias( access ):
     })
     alias.fingerprint = hashlib.md5(access).hexdigest()
     return alias
-
+def get_credentials( alias ):
+    credentials = db.query("SELECT * FROM speech WHERE target=%s and intent='badge'", alias.fingerprint)
+    return [ tornado.database.Row({
+        "codename": alias.codename, "fingerprint": alias.fingerprint, "credential": row.content
+    }) for row in credentials ]
+def get_studentcredentials( alias ):
+    credentials = db.query("SELECT * FROM speech WHERE source=%s and intent='badge'", alias.fingerprint)
+    return [ tornado.database.Row({
+        "codename": alias.codename, "fingerprint": alias.fingerprint, "credential": row.content
+    }) for row in credentials ]
 
 class index( tornado.web.RequestHandler ):
     def get( self, access ):
@@ -64,7 +73,9 @@ class private( tornado.web.RequestHandler ):
         if not db.get("SELECT * FROM access WHERE access=%s", access):
             raise tornado.web.HTTPError(404)
         alias = get_alias(access)
-        self.render( "private.html", access=access, alias=alias )
+        credentials = get_credentials(alias)
+        student_credentials = get_studentcredentials(alias)
+        self.render( "private.html", access=access, alias=alias, credentials=credentials, student_credentials=student_credentials )
 
 
 class alias_edit( tornado.web.RequestHandler ):
@@ -74,5 +85,25 @@ class alias_edit( tornado.web.RequestHandler ):
             "location": self.get_argument("location",""),
             "profile": self.get_argument("profile",""),
         })
-        db.execute( "INSERT speech(source,intent,content) VALUES(%s,%s,%s)", access, "alias", alias)
+        db.execute( "DELETE FROM speech WHERE source=%s AND intent='alias'", access )
+        db.execute( "INSERT speech(source,intent,content) VALUES(%s,'alias',%s)", access, alias)
         self.redirect("/"+access+"/private")
+
+class badges_issue( tornado.web.RequestHandler ):
+    def post( self, access ):
+        alias = get_alias(access)
+        fingerprint = self.get_argument("fingerprint")
+        credential = self.get_argument("credential")
+        if not db.get("SELECT * FROM speech WHERE source=%s AND target=%s AND intent='badge' AND content=%s",
+            alias.fingerprint, fingerprint, credential):
+            db.execute( "INSERT speech(source,target,intent,content) VALUES(%s,%s,'badge',%s)", alias.fingerprint, fingerprint, credential )
+        self.redirect("/"+access+"/private")
+
+class badges_revoke( tornado.web.RequestHandler ):
+    def post( self, access ):
+        alias = get_alias(access)
+        fingerprint = self.get_argument("fingerprint")
+        credential = self.get_argument("credential")
+        db.execute( "DELETE FROM speech WHERE source=%s AND target=%s AND intent='badge' AND content=%s", alias.fingerprint, fingerprint, credential )
+        self.redirect("/"+access+"/private")
+
