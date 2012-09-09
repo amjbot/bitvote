@@ -10,19 +10,19 @@
       <div class="tab-pane fade active in" id="badges-credentials">
         {% if len(credentials) > 0 %}
         {% for badge in credentials %}
-        <p><b>{{ badge.get("credential","") }}</b> awarded by <span title="{{ badge.source.get("",codename) }}">{{ badge.source_fingerprint }}</span></p>
+        <p><b>{{ badge.get("credential","") }}</b> awarded by <span title="{{ badge.source.get("codename","Anonymous") }}">{{ badge.source_fingerprint }}</span></p>
         {% end %}
         {% else %}
-        <p>You have no credentials.</p>
+        <p>You have no badges.</p>
         {% end %}
       </div>
       <div class="tab-pane fade" id="badges-students">
         {% if len(student_credentials) > 0 %}
         {% for badge in student_credentials %}
-        <p><b>{{ badge.get("credential","") }}</b> awarded to <span title="{{ badge.target.get("",codename) }}">{{ badge.target_fingerprint }}</span></p>
+        <p><b>{{ badge.get("credential","") }}</b> awarded to <span title="{{ badge.target.get("codename","Anonymous") }}">{{ badge.target_fingerprint }}</span></p>
         {% end %}
         {% else %}
-        <p>You have issued no credentials.</p>
+        <p>You have issued no badges.</p>
         {% end %}
       </div>
       <div class="tab-pane fade" id="badges-issue">
