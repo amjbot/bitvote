@@ -52,7 +52,9 @@ class index( tornado.web.RequestHandler ):
     def get( self, access ):
         if not db.get("SELECT * FROM access WHERE access=%s", access):
             raise tornado.web.HTTPError(404)
-        self.render( "index.html", access=access )
+        ident = get_fingerprint( access )
+        alias = get_speech( source=ident, intent='alias' )
+        self.render( "index.html", access=access, alias=alias )
 
 
 class bulletin( tornado.web.RequestHandler ):

@@ -607,6 +607,18 @@ cite {
 .muted {
   color: #999999;
 }
+.text-warning {
+  color: #C09853;
+}
+.text-error {
+  color: #B94A48;
+}
+.text-info {
+  color: #3A87AD;
+}
+.text-success {
+  color: #468847;
+}
 
 h1,
 h2,
