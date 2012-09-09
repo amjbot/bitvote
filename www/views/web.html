@@ -44,6 +44,7 @@
       </div>
       <div class="tab-pane fade" id="share">
         <form>
+          {% module xsrf_form_html() %}
           <fieldset>
             <input class="span9" type="text" name="uri" placeholder="Link">
             <input class="span3" type="text" name="voice" placeholder="Visibility">

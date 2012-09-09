@@ -29,8 +29,8 @@ def query_speech( source=tornado.database.Row({'fingerprint':''}),
     return speech
 def get_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent=""):
-    return (query_speech(source=source,target=target,intent=intent,limit=1) or [
-    tornado.database.Row({"source_fingerprint":source.fingerprint, 
+    speech = list(query_speech(source=source,target=target,intent=intent,limit=1))
+    return (speech or [tornado.database.Row({"source_fingerprint":source.fingerprint, 
         "target_fingerprint": target.fingerprint, "intent":intent,
         "source": tornado.database.Row({}), "target":tornado.database.Row({})
     })])[0]
@@ -46,12 +46,14 @@ def del_speech( source=tornado.database.Row({'fingerprint':''}),
     content = json.dumps(content)
     db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') AND %s IN (content,'{}')",
         source.fingerprint, target.fingerprint, intent, content )
-
+def require_access( access ):
+    if not db.get("SELECT * FROM access WHERE access=%s", access):
+        raise tornado.web.HTTPError(404)
+    
 
 class index( tornado.web.RequestHandler ):
     def get( self, access ):
-        if not db.get("SELECT * FROM access WHERE access=%s", access):
-            raise tornado.web.HTTPError(404)
+        require_access(access)
         ident = get_fingerprint( access )
         alias = get_speech( source=ident, intent='alias' )
         self.render( "index.html", access=access, alias=alias )
@@ -59,17 +61,24 @@ class index( tornado.web.RequestHandler ):
 
 class bulletin( tornado.web.RequestHandler ):
     def get( self, access ):
-        if not db.get("SELECT * FROM access WHERE access=%s", access):
-            raise tornado.web.HTTPError(404)
-        bulletin = [ tornado.database.Row({"title":"test", "body":"asdfasdfasdf", "author":"Mr. Big"}),
-                     tornado.database.Row({"title":"test", "body":"asdfasdfasdf", "author":"Mr. Big"}) ]
+        require_access(access)
+        bulletin = query_speech( intent='bulletin' )
         self.render( "bulletin.html", access=access, bulletin=bulletin )
+
+class bulletin_compose( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        source = get_fingerprint(access)
+        content = {"title": self.get_argument("title",""),
+            "body": self.get_argument("body",""),
+            "voice": float(self.get_argument("voice","1.0")), }
+        put_speech(source=source, intent='bulletin', content=content)
+        self.redirect("/"+access+"/bulletin")
 
 
 class wiki( tornado.web.RequestHandler ):
     def get( self, access, page ):
-        if not db.get("SELECT * FROM access WHERE access=%s", access):
-            raise tornado.web.HTTPError(404)
+        require_access(access)
         page_content = ""
         self.render( "wiki.html", access=access, page=page, page_content=page_content )
     def post( self ):
@@ -81,16 +90,14 @@ class wiki( tornado.web.RequestHandler ):
 
 class web( tornado.web.RequestHandler ):
     def get( self, access ):
-        if not db.get("SELECT * FROM access WHERE access=%s", access):
-            raise tornado.web.HTTPError(404)
+        require_access(access)
         result_set = []
         self.render( "web.html", access=access, result_set=result_set )
 
 
 class private( tornado.web.RequestHandler ):
     def get( self, access ):
-        if not db.get("SELECT * FROM access WHERE access=%s", access):
-            raise tornado.web.HTTPError(404)
+        require_access(access)
         ident = get_fingerprint( access )
         alias = get_speech( source=ident, intent='alias' )
         credentials = query_speech( target=ident, intent='badge' )
@@ -102,6 +109,7 @@ class private( tornado.web.RequestHandler ):
 
 class alias_edit( tornado.web.RequestHandler ):
     def post( self, access ):
+        require_access(access)
         alias = get_fingerprint(access)
         del_speech(source=alias, intent="alias")
         put_speech(source=alias, intent="alias", content={
@@ -114,6 +122,7 @@ class alias_edit( tornado.web.RequestHandler ):
 
 class badges_issue( tornado.web.RequestHandler ):
     def post( self, access ):
+        require_access(access)
         source = get_fingerprint(access)
         target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
         content = {"credential": self.get_argument("credential")}
@@ -123,6 +132,7 @@ class badges_issue( tornado.web.RequestHandler ):
 
 class badges_revoke( tornado.web.RequestHandler ):
     def post( self, access ):
+        require_access(access)
         source = get_fingerprint(access)
         target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
         content = {"credential": self.get_argument("credential")}
@@ -132,6 +142,7 @@ class badges_revoke( tornado.web.RequestHandler ):
 
 class contacts_remember( tornado.web.RequestHandler ):
     def post( self, access ):
+        require_access(access)
         source = get_fingerprint(access)
         target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
         content = {"keywords": self.get_argument("keywords"), 
@@ -143,6 +154,7 @@ class contacts_remember( tornado.web.RequestHandler ):
 
 class contacts_forget( tornado.web.RequestHandler ):
     def post( self, access ):
+        require_access(access)
         source = get_fingerprint(access)
         target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
         del_speech(source=source, target=target, intent='contact') 
