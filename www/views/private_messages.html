@@ -7,6 +7,7 @@
     <div id="tab-messages-content" class="tab-content">
       <div class="tab-pane fade active in" id="messages-view">
         <div class="accordion" id="accordion-messages">
+          {% if len(messages) > 0 %}
           {% for m in messages %}
           <div class="accordion-group">
             <div class="accordion-heading">
@@ -22,6 +23,9 @@
               </div>
             </div>
           </div>
+          {% end %}
+          {% else %}
+          <p>You have no messages.</p>
           {% end %}
         </div>
       </div>

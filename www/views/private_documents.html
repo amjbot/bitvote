@@ -12,17 +12,17 @@
             <div class="accordion-heading">
               <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-documents" href="#collapse-documents{{ di }}">
                 <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
-                      title="{{ d.source.get("codename","") or "Broadcast" }}">{{ d.source_fingerprint }}</span>
+                      title="{{ d.source.get("codename","") }}">{{ d.source_fingerprint or "Everyone" }}</span>
                 <i style="float: left" class="icon-arrow-right"></i>
                 <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden; margin-left: 20px"
-                      title="{{ d.target.get("codename","") or "Broadcast" }}">{{ d.target_fingerprint }}</span>
+                      title="{{ d.target.get("codename","") }}">{{ d.target_fingerprint or "Everyone" }}</span>
                 {{ d.intent }}
               </a>
             </div>
             <div id="collapse-documents{{ di }}" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
                 {% for (k,v) in d.content.items() %}
-                <p><b>{{ k }}:</b> {{ v }}</p>
+                <p><b>{{ k }}</b>: {{ v }}</p>
                 {% end %}
               </div>
             </div>

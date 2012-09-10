@@ -179,7 +179,7 @@ class message_compose( tornado.web.RequestHandler ):
             "voice": float(self.get_argument("voice","1.0")),
             "message": self.get_argument("message",""),
         }
-        put_speech(source=source, intent='message', content=content)
+        put_speech(source=source, target=target, intent='message', content=content)
         self.redirect("/"+access+"/private")
 
 
