@@ -1,0 +1,2 @@
+# m h  dom mon dow   command
+* * * * * /home/ubuntu/bitvote/cron/time_quota.py

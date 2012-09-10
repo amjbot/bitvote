@@ -107,7 +107,7 @@ class private( tornado.web.RequestHandler ):
         credentials = query_speech( target=ident, intent='badge' )
         student_credentials = query_speech( source=ident, intent='badge' )
         contacts = query_speech( source=ident, intent='contact' )
-        messages = query_speech( source=ident, intent='message' )
+        messages = query_speech( target=ident, intent='message' )
         documents = query_speech( source=ident )
         timebank = query_timebank( fingerprint=ident )
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
