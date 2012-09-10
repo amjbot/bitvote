@@ -93,8 +93,14 @@
           timebank[c] = (timebank[c] || 0) + (timebank_quota[c] || 1);
         }
         for( c in timebank ){
-          $(".timebank-"+c).text( "" + Math.floor(timebank[c]/3600) + ":"
-          + Math.floor((timebank[c]/60)%60) + ":" + Math.floor(timebank[c]%60) );
+          var hours = Math.floor(timebank[c]/3600);
+          var minutes = Math.floor((timebank[c]/60)%60);
+          var seconds = Math.floor(timebank[c]%60);
+          $(".timebank-"+c).text(
+            "" + hours + ":"
+            + ((minutes<10)?"0":"") + minutes + ":"
+            + ((seconds<10)?"0":"") + seconds
+          );
         }
       }; timebank_pulse(); setInterval(timebank_pulse, 1000)
     </script>
