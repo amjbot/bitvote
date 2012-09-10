@@ -14,13 +14,14 @@
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse{{ bi }}">
-                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;">{{ b.source_fingerprint }}</span>
-                {{ b.title }}
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
+                      title="{{ b.source.get("codename","") }}" >{{ b.source_fingerprint }}</span>
+                {{ b.subject }}
               </a>
             </div>
             <div id="collapse{{ bi }}" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
-                {{ b.body }}
+                {{ b.message }}
               </div>
             </div>
           </div>
@@ -32,11 +33,11 @@
           {% module xsrf_form_html() %}
           <legend>Edit</legend>
           <fieldset>
-            <input class="span9" name="title" type="text" placeholder="Title">
+            <input class="span9" name="subject" type="text" placeholder="Subject">
             <input class="span3" name="voice" type="text" placeholder="Visibility">
           </fieldset>
           <fieldset>
-            <textarea class="span12" name="body" rows="13" placeholder="Body text"></textarea>
+            <textarea class="span12" name="message" rows="13" placeholder="Message"></textarea>
           </fieldset>
           <button type="submit" class="btn">Submit</button>
         </form>

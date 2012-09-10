@@ -15,14 +15,14 @@ def get_fingerprint( access ):
 def query_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent="", limit=50 ):
     speech = db.query("SELECT s.source AS source_fingerprint, s.target as target_fingerprint, s.content as s_content, " +
-        "source.content AS source_alias, target.content AS target_alias from speech as s " +
+        "source.content AS source_alias, target.content AS target_alias, s.intent as intent from speech as s " +
         "LEFT OUTER JOIN speech AS source ON s.source=source.source AND (source.intent='alias' OR source.intent IS NULL) " +
         "LEFT OUTER JOIN speech AS target ON s.target=target.source AND (target.intent='alias' OR target.intent IS NULL) " +
         "WHERE %s IN (s.source,'') AND %s IN (s.target,'') AND %s IN (s.intent,'') ORDER BY s.voice desc LIMIT %s",
         source.fingerprint, target.fingerprint, intent, limit
     )
-    print >> sys.stderr, dict(source=source, target=target, intent=intent), len(speech)
     for s in speech:
+        s.content = json.loads(s.s_content) if s.s_content else {}
         s.update( json.loads(s.s_content) if s.s_content else {} )
         s.source = tornado.database.Row(json.loads(s.source_alias) if s.source_alias else {})
         s.target = tornado.database.Row(json.loads(s.target_alias) if s.target_alias else {})
@@ -69,8 +69,9 @@ class bulletin_compose( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        content = {"title": self.get_argument("title",""),
-            "body": self.get_argument("body",""),
+        content = {
+            "subject": self.get_argument("subject",""),
+            "message": self.get_argument("message",""),
             "voice": float(self.get_argument("voice","1.0")), }
         put_speech(source=source, intent='bulletin', content=content)
         self.redirect("/"+access+"/bulletin")
@@ -104,8 +105,10 @@ class private( tornado.web.RequestHandler ):
         student_credentials = query_speech( source=ident, intent='badge' )
         contacts = query_speech( source=ident, intent='contact' )
         messages = query_speech( source=ident, intent='message' )
+        documents = query_speech( source=ident )
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
-            student_credentials=student_credentials, contacts=contacts, messages=messages )
+            student_credentials=student_credentials, contacts=contacts, messages=messages,
+            documents=documents )
 
 
 class alias_edit( tornado.web.RequestHandler ):

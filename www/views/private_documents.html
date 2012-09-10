@@ -7,19 +7,27 @@
     <div id="tab-documents-content" class="tab-content">
       <div class="tab-pane fade active in" id="documents-view">
         <div class="accordion" id="accordion-documents">
+          {% for di,d in enumerate(documents) %}
           <div class="accordion-group">
             <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-documents" href="#collapse-documents0">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354 <i class="icon-arrow-right"></i> 124233328</span>
-                Hello, can you meet me for coffee today?
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-documents" href="#collapse-documents{{ di }}">
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
+                      title="{{ d.source.get("codename","") or "Broadcast" }}">{{ d.source_fingerprint }}</span>
+                <i style="float: left" class="icon-arrow-right"></i>
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden; margin-left: 20px"
+                      title="{{ d.target.get("codename","") or "Broadcast" }}">{{ d.target_fingerprint }}</span>
+                {{ d.intent }}
               </a>
             </div>
-            <div id="collapse-documents0" class="accordion-body collapse" style="height: 0px; ">
+            <div id="collapse-documents{{ di }}" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
-                <p><b>body:</b> asdf asdf asdf</p>
+                {% for (k,v) in d.content.items() %}
+                <p><b>{{ k }}:</b> {{ v }}</p>
+                {% end %}
               </div>
             </div>
           </div>
+          {% end %}
         </div>
       </div>
       <div class="tab-pane fade" id="documents-remove">
