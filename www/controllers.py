@@ -48,7 +48,9 @@ def del_speech( source=tornado.database.Row({'fingerprint':''}),
         source.fingerprint, target.fingerprint, intent, content )
 def query_timebank( fingerprint=tornado.database.Row({'fingerprint':''}),
                     currency='' ):
-    return db.query("SELECT * FROM timebank WHERE %s in(fingerprint,'') AND %s in (currency,'')", fingerprint.fingerprint, currency)
+    return db.query("SELECT * FROM timebank WHERE %s IN (fingerprint,'') AND %s in (currency,'')", fingerprint.fingerprint, currency)
+def query_timebank_quota( currency='' ):
+    return db.query("SELECT * FROM timebank_quota WHERE %s IN (currency,'')", currency)
 def require_access( access ):
     if not db.get("SELECT * FROM access WHERE access=%s", access):
         raise tornado.web.HTTPError(404)
@@ -59,14 +61,20 @@ class index( tornado.web.RequestHandler ):
         require_access(access)
         ident = get_fingerprint( access )
         alias = get_speech( source=ident, intent='alias' )
-        self.render( "index.html", access=access, alias=alias )
+        timebank = query_timebank( fingerprint=ident )
+        timebank_quota = query_timebank_quota()
+        self.render( "index.html", access=access, alias=alias,
+            timebank=timebank, timebank_quota=timebank_quota )
 
 
 class bulletin( tornado.web.RequestHandler ):
     def get( self, access ):
         require_access(access)
         bulletin = query_speech( intent='bulletin' )
-        self.render( "bulletin.html", access=access, bulletin=bulletin )
+        timebank = query_timebank( fingerprint=ident )
+        timebank_quota = query_timebank_quota()
+        self.render( "bulletin.html", access=access, bulletin=bulletin,
+            timebank=timebank, timebank_quota=timebank_quota )
 
 class bulletin_compose( tornado.web.RequestHandler ):
     def post( self, access ):
@@ -84,7 +92,10 @@ class wiki( tornado.web.RequestHandler ):
     def get( self, access, page ):
         require_access(access)
         page_content = ""
-        self.render( "wiki.html", access=access, page=page, page_content=page_content )
+        timebank = query_timebank( fingerprint=ident )
+        timebank_quota = query_timebank_quota()
+        self.render( "wiki.html", access=access, page=page, page_content=page_content,
+            timebank=timebank, timebank_quota=timebank_quota )
     def post( self ):
         access = self.get_argument("access")
         follow = self.get_argument("follow",None)
@@ -96,7 +107,10 @@ class web( tornado.web.RequestHandler ):
     def get( self, access ):
         require_access(access)
         result_set = []
-        self.render( "web.html", access=access, result_set=result_set )
+        timebank = query_timebank( fingerprint=ident )
+        timebank_quota = query_timebank_quota()
+        self.render( "web.html", access=access, result_set=result_set,
+            timebank=timebank, timebank_quota=timebank_quota )
 
 
 class private( tornado.web.RequestHandler ):
@@ -110,9 +124,10 @@ class private( tornado.web.RequestHandler ):
         messages = query_speech( target=ident, intent='message' )
         documents = query_speech( source=ident )
         timebank = query_timebank( fingerprint=ident )
+        timebank_quota = query_timebank_quota()
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts, messages=messages,
-            documents=documents, timebank=timebank )
+            documents=documents, timebank=timebank, timebank_quota=timebank_quota )
 
 
 class alias_edit( tornado.web.RequestHandler ):

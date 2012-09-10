@@ -26,16 +26,16 @@
                 <a href="/{{ access }}">Home</a>
               </li>
               <li class="{% if request.path.endswith("/bulletin") %}active{% end %}">
-                <a href="/{{ access }}/bulletin">Bulletin 0:00</a>
+                <a href="/{{ access }}/bulletin">Bulletin <span class="timebank-bulletin">0:00:00</span></a>
               </li>
               <li class="{% if "/wiki/" in request.path %}active{% end %}">
-                <a href="/{{ access }}/wiki/Index">Wiki 0:00</a>
+                <a href="/{{ access }}/wiki/Index">Wiki <span class="timebank-wiki">0:00:00</span></a>
               </li>
               <li class="{% if request.path.endswith("/web") %}active{% end %}">
-                <a href="/{{ access }}/web">Web 0:00</a>
+                <a href="/{{ access }}/web">Web <span class="timebank-web">0:00:00</span></a>
               </li>
               <li class="{% if request.path.endswith("/private") %}active{% end %}">
-                <a href="/{{ access }}/private">Private 0:00</a>
+                <a href="/{{ access }}/private">Private <span class="timebank-private">0:00:00</span></a>
               </li>
             </ul>
           </div>
@@ -77,5 +77,26 @@
     <script src="/static/js/bootstrap-carousel.js"></script>
     <script src="/static/js/bootstrap-typeahead.js"></script>
     <script src="/static/js/bootstrap-affix.js"></script>
+    <script type="text/javascript">
+      var timebank = {
+        {% for t in timebank %}
+        "{{ t.currency }}": {{ t.balance }},
+        {% end %}
+      };
+      var timebank_quota = {
+        {% for q in timebank_quota %}
+        "{{ q.currency }}": {{ q.duplicity }},
+        {% end %}
+      };
+      function timebank_pulse(){
+        for( c in timebank_quota ){
+          timebank[c] = (timebank[c] || 0) + (timebank_quota[c] || 1);
+        }
+        for( c in timebank ){
+          $(".timebank-"+c).text( "" + Math.floor(timebank[c]/3600) + ":"
+          + Math.floor((timebank[c]/60)%60) + ":" + Math.floor(timebank[c]%60) );
+        }
+      }; timebank_pulse(); setInterval(timebank_pulse, 1000)
+    </script>
   </body>
 </html>
