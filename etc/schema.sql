@@ -7,15 +7,15 @@ CREATE TABLE IF NOT EXISTS access (
     access VARBINARY(32) NOT NULL PRIMARY KEY,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE IF NOT EXISTS license (
-    access VARBINARY(32) NOT NULL,
-    intent VARBINARY(32) NOT NULL,
-    entitlement DOUBLE NOT NULL DEFAULT 0,
-    PRIMARY KEY(access,intent),
-    KEY(intent,access)
+CREATE TABLE IF NOT EXISTS timebank (
+    fingerprint VARBINARY(32) NOT NULL,
+    currency VARBINARY(32) NOT NULL,
+    balance DOUBLE NOT NULL DEFAULT 0,
+    PRIMARY KEY(fingerprint,currency),
+    KEY(currency)
 );
-CREATE TABLE IF NOT EXISTS quota (
-    intent VARBINARY(32) NOT NULL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS timebank_quota (
+    currency VARBINARY(32) NOT NULL PRIMARY KEY,
     universal BIT NOT NULL DEFAULT 1,
     duplicity DOUBLE NOT NULL DEFAULT 1
 );

@@ -46,6 +46,9 @@ def del_speech( source=tornado.database.Row({'fingerprint':''}),
     content = json.dumps(content)
     db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') AND %s IN (content,'{}')",
         source.fingerprint, target.fingerprint, intent, content )
+def query_timebank( fingerprint=tornado.database.Row({'fingerprint':''}),
+                    currency="" ):
+    return db.query("SELECT * FROM timebank WHERE %s in(fingerprint,'') AND %s in (currency,'')", fingerprint, currency)
 def require_access( access ):
     if not db.get("SELECT * FROM access WHERE access=%s", access):
         raise tornado.web.HTTPError(404)
@@ -106,9 +109,10 @@ class private( tornado.web.RequestHandler ):
         contacts = query_speech( source=ident, intent='contact' )
         messages = query_speech( source=ident, intent='message' )
         documents = query_speech( source=ident )
+        timebank = query_timebank( fingerprint=ident )
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts, messages=messages,
-            documents=documents )
+            documents=documents, timebank=timebank )
 
 
 class alias_edit( tornado.web.RequestHandler ):
@@ -177,3 +181,18 @@ class message_compose( tornado.web.RequestHandler ):
         }
         put_speech(source=source, intent='message', content=content)
         self.redirect("/"+access+"/private")
+
+
+class timebank_transfer( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        source = get_fingerprint(access)
+        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
+        content = {
+            "subject": self.get_argument("subject",""),
+            "voice": float(self.get_argument("voice","1.0")),
+            "message": self.get_argument("message",""),
+        }
+        put_speech(source=source, intent='message', content=content)
+        self.redirect("/"+access+"/private")
+
