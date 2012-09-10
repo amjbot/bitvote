@@ -2029,15 +2029,19 @@ table .span24 {
   margin-left: 0;
 }
 
-.table tbody tr.success td {
+.table tbody tr.success td, .table tbody tr.success th {
   background-color: #dff0d8;
 }
 
-.table tbody tr.error td {
+.table tbody tr.warning td, .table tbody tr.warning th {
+  background-color: #fcf8e3;
+}
+
+.table tbody tr.error td, .table tbody tr.error th {
   background-color: #f2dede;
 }
 
-.table tbody tr.info td {
+.table tbody tr.info td, .table tbody tr.info th {
   background-color: #d9edf7;
 }
 

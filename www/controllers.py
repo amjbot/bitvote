@@ -47,8 +47,8 @@ def del_speech( source=tornado.database.Row({'fingerprint':''}),
     db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') AND %s IN (content,'{}')",
         source.fingerprint, target.fingerprint, intent, content )
 def query_timebank( fingerprint=tornado.database.Row({'fingerprint':''}),
-                    currency="" ):
-    return db.query("SELECT * FROM timebank WHERE %s in(fingerprint,'') AND %s in (currency,'')", fingerprint, currency)
+                    currency='' ):
+    return db.query("SELECT * FROM timebank WHERE %s in(fingerprint,'') AND %s in (currency,'')", fingerprint.fingerprint, currency)
 def require_access( access ):
     if not db.get("SELECT * FROM access WHERE access=%s", access):
         raise tornado.web.HTTPError(404)
@@ -195,4 +195,5 @@ class timebank_transfer( tornado.web.RequestHandler ):
         }
         put_speech(source=source, intent='message', content=content)
         self.redirect("/"+access+"/private")
+
 
