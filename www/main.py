@@ -27,6 +27,7 @@ application = tornado.web.Application( [
     ( "^/(?P<access>[_0-9a-zA-Z]+)/contacts-remember$",         controllers.contacts_remember ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/contacts-forget$",           controllers.contacts_forget   ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/bulletin-compose$",          controllers.bulletin_compose  ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/message-compose$",           controllers.message_compose   ),
 
 ], **settings )
 

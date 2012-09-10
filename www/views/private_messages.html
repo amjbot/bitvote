@@ -7,44 +7,36 @@
     <div id="tab-messages-content" class="tab-content">
       <div class="tab-pane fade active in" id="messages-view">
         <div class="accordion" id="accordion-messages">
+          {% for m in messages %}
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-messages0">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
-                Hello, can you meet me for coffee today?
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
+                      title="{{ m.source.get("codename","") }}">{{ m.source_fingerprint }}</span>
+                {{ m.subject }}
               </a>
             </div>
             <div id="collapse-messages0" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
-                <p>Wanted to talk about prospects for ..............</p>
+                <p>{{ m.message }}</p>
               </div>
             </div>
           </div>
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-messages1">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
-                Application for renewal of gym membership.
-              </a>
-            </div>
-            <div id="collapse-messages1" class="accordion-body collapse" style="height: 0px;">
-              <div class="accordion-inner">
-                <p>huh?</p>
-              </div>
-            </div>
-          </div>
+          {% end %}
         </div>
       </div>
       <div class="tab-pane fade" id="messages-compose">
-        <form method="POST" action="/">
+        <form method="POST" action="/{{ access }}/message-compose">
+          {% module xsrf_form_html() %}
           <fieldset>
             <input class="span4" type="text" name="fingerprint" placeholder="Recipient">
           </fieldset>
           <fieldset>
-            <input class="span4" type="text" name="tags" placeholder="Title">
+            <input class="span4" type="text" name="subject" placeholder="Subject">
+            <input class="span2" type="text" name="voice" placeholder="Voice">
           </fieldset>
           <fieldset>
-            <textarea class="span6" name="description" rows="13" placeholder="Description"></textarea>
+            <textarea class="span6" name="message" rows="13" placeholder="Message"></textarea>
           </fieldset>
           <button type="submit" class="btn">Submit</button>
         </form>

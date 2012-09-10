@@ -103,8 +103,9 @@ class private( tornado.web.RequestHandler ):
         credentials = query_speech( target=ident, intent='badge' )
         student_credentials = query_speech( source=ident, intent='badge' )
         contacts = query_speech( source=ident, intent='contact' )
+        messages = query_speech( source=ident, intent='message' )
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
-            student_credentials=student_credentials, contacts=contacts )
+            student_credentials=student_credentials, contacts=contacts, messages=messages )
 
 
 class alias_edit( tornado.web.RequestHandler ):
@@ -161,3 +162,15 @@ class contacts_forget( tornado.web.RequestHandler ):
         self.redirect("/"+access+"/private")
 
 
+class message_compose( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        source = get_fingerprint(access)
+        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
+        content = {
+            "subject": self.get_argument("subject",""),
+            "voice": float(self.get_argument("voice","1.0")),
+            "message": self.get_argument("message",""),
+        }
+        put_speech(source=source, intent='message', content=content)
+        self.redirect("/"+access+"/private")
