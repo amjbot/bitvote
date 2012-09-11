@@ -9,7 +9,7 @@
         {% if len(timebank) > 0 %}
         <table class="table table-striped">
           <tr class="success">
-            <th>Account Holder</th>
+            <th>Fingerprint</th>
             <th>Currency</th>
             <th>Balance</th>
           </tr>
@@ -17,7 +17,7 @@
           <tr>
             <td>{{ account.fingerprint }}</td>
             <td>{{ account.currency }}</td>
-            <td>{{ int(account.balance / 60) }}:{{ int(account.balance) % 60  }}</td>
+            <td class="timebank-{{ account.currency }}">0:00:00</td>
           </tr>
           {% end %}
         </table>
@@ -27,6 +27,7 @@
       </div>
       <div class="tab-pane fade" id="timebank-transfer">
         <form method="POST" action="/{{ access }}/timebank-transfer">
+          {% module xsrf_form_html() %}
           <fieldset>
             <input class="span4" type="text" name="recipient" placeholder="Recipient">
           </fieldset>

@@ -51,10 +51,19 @@ def query_timebank( fingerprint=tornado.database.Row({'fingerprint':''}),
     return db.query("SELECT * FROM timebank WHERE %s IN (fingerprint,'') AND %s in (currency,'')", fingerprint.fingerprint, currency)
 def query_timebank_quota( currency='' ):
     return db.query("SELECT * FROM timebank_quota WHERE %s IN (currency,'')", currency)
+def transfer_time( source, target, currency, amount ):
+    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s AND balance>(%s * 1.003)", source.fingerprint, currency, amount):
+        return False
+    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s", target.fingerprint, currency):
+        return False
+    db.execute("UPDATE timebank set balance=balance-(%s * 1.003) WHERE fingerprint=%s AND currency=%s", amount, source.fingerprint, currency)
+    db.execute("UPDATE timebank set balance=balance+%s WHERE fingerprint=%s AND currency=%s", amount, target.fingerprint, currency)
+    return True
+
 def require_access( access ):
     if not db.get("SELECT * FROM access WHERE access=%s", access):
         raise tornado.web.HTTPError(404)
-    
+
 
 class index( tornado.web.RequestHandler ):
     def get( self, access ):
@@ -202,13 +211,10 @@ class timebank_transfer( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
-        content = {
-            "subject": self.get_argument("subject",""),
-            "voice": float(self.get_argument("voice","1.0")),
-            "message": self.get_argument("message",""),
-        }
-        put_speech(source=source, intent='message', content=content)
+        target = tornado.database.Row({"fingerprint": self.get_argument("recipient")})
+        currency = self.get_argument("currency")
+        amount = float(self.get_argument("amount"))
+        transfer_time( source=source, target=target, currency=currency, amount=amount )
         self.redirect("/"+access+"/private")
 
 
