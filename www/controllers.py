@@ -43,7 +43,7 @@ def put_speech( source=tornado.database.Row({'fingerprint':''}),
         dchash = hashlib.md5(
           json.dumps(dict(content.items() + [('source',source.fingerprint),('target',target.fingerprint),('intent',intent)] ))
         ).hexdigest()
-        db.execute( "INSERT speech(source,target,intent,content,dchash) VALUES(%s,%s,%s,%s,%s)",
+        db.execute( "INSERT IGNORE speech(source,target,intent,content,dchash) VALUES(%s,%s,%s,%s,%s)",
             source.fingerprint, target.fingerprint, intent, content_string, dchash )
 def del_speech( source=tornado.database.Row({'fingerprint':''}), dchash="",
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
@@ -229,4 +229,31 @@ class documents_remove( tornado.web.RequestHandler ):
         dchash = self.get_argument("hash")
         self.redirect("/"+access+"/private")
         del_speech( dchash=dchash )
+
+
+class transport_import( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        for line in self.request.files['file'][0]['body'].split('\n'):
+            if line.strip()=="":
+                continue
+            d = json.loads(line)
+            content = json.loads(d['content'])
+            dchash = hashlib.md5(
+              json.dumps(dict(content.items() + [('source',d['source']),('target',d['target']),('intent',d['intent'])] ))
+            ).hexdigest()
+            db.execute("INSERT IGNORE speech(dchash,source,target,intent,voice,content) VALUES(%s,%s,%s,%s,%s,%s)",
+              dchash, d['source'], d['target'], d['intent'], d['voice'], d['content'] )
+        self.redirect("/"+access+"/private")
+
+
+class transport_export( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access( access )
+        ident = get_fingerprint( access )
+        self.set_header('Content-Type', 'application/json')
+        self.set_header('Content-Disposition', 'attachment; filename=documents.json')
+        for d in db.query("SELECT source,target,intent,voice,content FROM speech WHERE source=%s", ident.fingerprint):
+            self.write(json.dumps( d )+"\n")
+
 
