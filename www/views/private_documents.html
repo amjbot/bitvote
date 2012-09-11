@@ -21,6 +21,7 @@
             </div>
             <div id="collapse-documents{{ di }}" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
+                <p><b>[hash]</b>: {{ d.document_hash }}</p>
                 {% for (k,v) in d.content.items() %}
                 <p><b>{{ k }}</b>: {{ v }}</p>
                 {% end %}
@@ -31,7 +32,8 @@
         </div>
       </div>
       <div class="tab-pane fade" id="documents-remove">
-        <form>
+        <form method="POST" action="/{{ access }}/documents-remove">
+          {% module xsrf_form_html() %}
           <fieldset>
             <input class="span4" type="text" name="hash" placeholder="Document key">
           </fieldset>

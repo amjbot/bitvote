@@ -14,8 +14,9 @@ def get_fingerprint( access ):
     return tornado.database.Row({"fingerprint": hashlib.md5(access).hexdigest()})
 def query_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent="", limit=50 ):
-    speech = db.query("SELECT s.source AS source_fingerprint, s.target as target_fingerprint, s.content as s_content, " +
-        "source.content AS source_alias, target.content AS target_alias, s.intent as intent from speech as s " +
+    speech = db.query("SELECT s.dchash AS document_hash, s.source AS source_fingerprint, s.target as target_fingerprint, " +
+        "s.content as s_content, source.content AS source_alias, target.content AS target_alias, s.intent as intent " +
+        "from speech as s " +
         "LEFT OUTER JOIN speech AS source ON s.source=source.source AND (source.intent='alias' OR source.intent IS NULL) " +
         "LEFT OUTER JOIN speech AS target ON s.target=target.source AND (target.intent='alias' OR target.intent IS NULL) " +
         "WHERE %s IN (s.source,'') AND %s IN (s.target,'') AND %s IN (s.intent,'') ORDER BY s.voice desc LIMIT %s",
@@ -36,16 +37,20 @@ def get_speech( source=tornado.database.Row({'fingerprint':''}),
     })])[0]
 def put_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
-    content = json.dumps(content)
+    content_string = json.dumps(content)
     if not db.get("SELECT * FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') AND %s IN (content,'{}')",
-        source.fingerprint, target.fingerprint, intent, content):
-        db.execute( "INSERT speech(source,target,intent,content) VALUES(%s,%s,%s,%s)",
-            source.fingerprint, target.fingerprint, intent, content )
-def del_speech( source=tornado.database.Row({'fingerprint':''}),
+        source.fingerprint, target.fingerprint, intent, content_string):
+        dchash = hashlib.md5(
+          json.dumps(dict(content.items() + [('source',source.fingerprint),('target',target.fingerprint),('intent',intent)] ))
+        ).hexdigest()
+        db.execute( "INSERT speech(source,target,intent,content,dchash) VALUES(%s,%s,%s,%s,%s)",
+            source.fingerprint, target.fingerprint, intent, content_string, dchash )
+def del_speech( source=tornado.database.Row({'fingerprint':''}), dchash="",
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
     content = json.dumps(content)
-    db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') AND %s IN (content,'{}')",
-        source.fingerprint, target.fingerprint, intent, content )
+    db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') " +
+               "AND %s IN (content,'{}') AND %s IN (dchash,'')",
+        source.fingerprint, target.fingerprint, intent, content, dchash )
 def query_timebank( fingerprint=tornado.database.Row({'fingerprint':''}),
                     currency='' ):
     return db.query("SELECT * FROM timebank WHERE %s IN (fingerprint,'') AND %s in (currency,'')", fingerprint.fingerprint, currency)
@@ -217,4 +222,11 @@ class timebank_transfer( tornado.web.RequestHandler ):
         transfer_time( source=source, target=target, currency=currency, amount=amount )
         self.redirect("/"+access+"/private")
 
+
+class documents_remove( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        dchash = self.get_argument("hash")
+        self.redirect("/"+access+"/private")
+        del_speech( dchash=dchash )
 

@@ -29,6 +29,7 @@ application = tornado.web.Application( [
     ( "^/(?P<access>[_0-9a-zA-Z]+)/bulletin-compose$",          controllers.bulletin_compose  ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/message-compose$",           controllers.message_compose   ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/timebank-transfer$",         controllers.timebank_transfer ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/documents-remove$",          controllers.documents_remove  ),
 
 ], **settings )
 
