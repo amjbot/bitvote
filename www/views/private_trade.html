@@ -44,18 +44,44 @@
         </div>
       </div>
       <div class="tab-pane fade" id="trade-propose">
-        <form>
+        <form method="POST" action="/{{ access }}/trade-propose">
           <fieldset>
             <input class="span4" type="text" name="fingerprint" placeholder="Recipient">
           </fieldset>
           <fieldset>
             <input class="span4" type="text" name="description" placeholder="Description">
           </fieldset>
-          <fieldset>
-            <textarea class="span6" name="conditions" rows="13" placeholder="Conditions"></textarea>
-          </fieldset>
-          <button type="submit" class="btn">Submit</button>
+          <section>
+            <span style="margin-right: 20px">Add a condition:</span>
+            <button type="button" class="btn btn-primary"
+            onclick="$('#trade-conditions').append($('#trade-badge').html().replace('{i}',$('#trade-conditions').children().length))">Badge</button>
+            <button type="button" class="btn btn-primary"
+            onclick="$('#trade-conditions').append($('#trade-contact').html().replace('{i}',$('#trade-conditions').children().length))">Contact</button>
+            <button type="button" class="btn btn-primary"
+            onclick="$('#trade-conditions').append($('#trade-message').html().replace('{i}',$('#trade-conditions').children().length))">Message</button>
+            <button type="button" class="btn btn-primary" 
+            onclick="$('#trade-conditions').append($('#trade-time').html().replace('{i}',$('#trade-conditions').children().length))">Time</button>
+          </section>
+          <section>
+            <div class="well" id="trade-conditions">
+            </div>
+          </section>
+          <section>
+            <button type="submit" class="btn">Submit</button>
+          </section>
         </form>
+        <div style="display:none" id="trade-badge">
+          <p>Trade Conditions {i}.</p>
+        </div>
+        <div style="display:none" id="trade-contact">
+          <p>Trade Conditions {i}.</p>
+        </div>
+        <div style="display:none" id="trade-message">
+          <p>Trade Conditions {i}.</p>
+        </div>
+        <div style="display:none" id="trade-time">
+          <p>Trade Conditions {i}.</p>
+        </div>
       </div>
     </div>
   </section>
