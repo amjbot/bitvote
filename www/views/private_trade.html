@@ -54,13 +54,13 @@
           <section>
             <span style="margin-right: 20px">Add a condition:</span>
             <button type="button" class="btn btn-primary"
-            onclick="$('#trade-conditions').append($('#trade-badge').html().replace('{i}',$('#trade-conditions').children().length))">Badge</button>
+            onclick="$('#trade-conditions').append($('#trade-badge').html().replace(/{i}/g,$('#trade-conditions').children().length))">Badge</button>
             <button type="button" class="btn btn-primary"
-            onclick="$('#trade-conditions').append($('#trade-contact').html().replace('{i}',$('#trade-conditions').children().length))">Contact</button>
+            onclick="$('#trade-conditions').append($('#trade-contact').html().replace(/{i}/g,$('#trade-conditions').children().length))">Contact</button>
             <button type="button" class="btn btn-primary"
-            onclick="$('#trade-conditions').append($('#trade-message').html().replace('{i}',$('#trade-conditions').children().length))">Message</button>
+            onclick="$('#trade-conditions').append($('#trade-message').html().replace(/{i}/g,$('#trade-conditions').children().length))">Message</button>
             <button type="button" class="btn btn-primary" 
-            onclick="$('#trade-conditions').append($('#trade-time').html().replace('{i}',$('#trade-conditions').children().length))">Time</button>
+            onclick="$('#trade-conditions').append($('#trade-time').html().replace(/{i}/g,$('#trade-conditions').children().length))">Time</button>
           </section>
           <section>
             <div class="well" id="trade-conditions">
@@ -71,16 +71,24 @@
           </section>
         </form>
         <div style="display:none" id="trade-badge">
-          <p>Trade Conditions {i}.</p>
+            <hr><h4>Trade Badge</h4>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
         </div>
         <div style="display:none" id="trade-contact">
-          <p>Trade Conditions {i}.</p>
+            <hr><h4>Trade Contact</h4>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
         </div>
         <div style="display:none" id="trade-message">
-          <p>Trade Conditions {i}.</p>
+            <hr><h4>Trade Message</h4>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
         </div>
         <div style="display:none" id="trade-time">
-          <p>Trade Conditions {i}.</p>
+            <hr><h4>Trade Time</h4>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
+            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
         </div>
       </div>
     </div>
