@@ -71,24 +71,62 @@
           </section>
         </form>
         <div style="display:none" id="trade-badge">
-            <hr><h4>Trade Badge</h4>
+          <hr><h4>Trade Badge</h4>
+          <input type="hidden" name="trade-type-{i}" value="badge">
+          <fieldset>
             <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
             <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
+          </fieldset><br>
+          <fieldset>
+            <input class="span4" type="text" name="trade-fingerprint-{i}" placeholder="Student">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="trade-credential-{i}" placeholder="Credential">
+          </fieldset>
         </div>
         <div style="display:none" id="trade-contact">
-            <hr><h4>Trade Contact</h4>
-            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
-            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
+          <hr><h4>Trade Contact</h4>
+          <input type="hidden" name="trade-type-{i}" value="contact">
+          <fieldset>
+            <input class="span4" type="text" name="trade-fingerprint-{i}" placeholder="Fingerprint">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="trade-keywords-{i}" placeholder="Keywords">
+          </fieldset>
+          <fieldset>
+            <textarea class="span6" name="trade-description-{i}" rows="13" placeholder="Description"></textarea>
+          </fieldset>
         </div>
         <div style="display:none" id="trade-message">
-            <hr><h4>Trade Message</h4>
-            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
-            <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
+          <hr><h4>Trade Message</h4>
+          <input type="hidden" name="trade-type-{i}" value="message">
+          <fieldset>
+            <input class="span4" type="text" name="trade-fingerprint-{i}" placeholder="Recipient">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="trade-subject-{i}" placeholder="Subject">
+            <input class="span2" type="text" name="trade-voice-{i}" placeholder="Voice">
+          </fieldset>
+          <fieldset>
+            <textarea class="span6" name="trade-message-{i}" rows="13" placeholder="Message"></textarea>
+          </fieldset>
         </div>
         <div style="display:none" id="trade-time">
-            <hr><h4>Trade Time</h4>
+          <hr><h4>Trade Time</h4>
+          <fieldset>
             <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-gain-{i}" value="gain" checked>Gain</label>
             <label class="radio inline"><input type="radio" name="trade-gain-{i}" id="trade-lose-{i}" value="lose">Lose</label>
+          </fieldset><br>
+          <fieldset>
+            <input class="span4" type="text" name="trade-recipient-{i}" placeholder="Recipient">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="trade-currency-{i}" placeholder="Currency">
+          </fieldset>
+          <fieldset>
+            <input class="span4" type="text" name="trade-amount-{i}" placeholder="Amount">
+          </fieldset>
+          <div class="alert alert-info">A 0.3% transaction tax will be added to the final amount.</div>
         </div>
       </div>
     </div>
