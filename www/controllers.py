@@ -140,9 +140,17 @@ class private( tornado.web.RequestHandler ):
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
         open_trades = query_speech( target=ident, intent='trade-proposal' )
+        rejected_trades = query_speech( target=ident, intent='trade-reject' )
+        possible_trades = query_speech( target=ident, intent='trade-accept' )
         pending_trades = []
-        rejected_trades = []
         accepted_trades = []
+        for t in possible_trades:
+             if db.query("SELECT * FROM speech WHERE intent='trade-reject' AND dchash=%s", t.document_hash):
+                 rejected_trades.append( t )
+             elif db.query("SELECT * FROM speech WHERE intent='trade-proposal' AND dchash=%s", t.document_hash):
+                 pending_trades.append( t )
+             else:
+                 accepted_trades.append( t )
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts, messages=messages,
             documents=documents, timebank=timebank, timebank_quota=timebank_quota,
