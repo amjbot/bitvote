@@ -5,6 +5,7 @@ import string
 import json
 import hashlib
 import sys
+import time
 
 
 db = tornado.database.Connection(host="localhost",user="root",database="root",password="root")
@@ -12,6 +13,8 @@ db = tornado.database.Connection(host="localhost",user="root",database="root",pa
 
 def get_fingerprint( access ):
     return tornado.database.Row({"fingerprint": hashlib.md5(access).hexdigest()})
+def finger( fingerprint ):
+    return tornado.database.Row({"fingerprint": fingerprint})
 def query_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent="", limit=50 ):
     speech = db.query("SELECT s.dchash AS document_hash, s.source AS source_fingerprint, s.target as target_fingerprint, " +
@@ -56,14 +59,6 @@ def query_timebank( fingerprint=tornado.database.Row({'fingerprint':''}),
     return db.query("SELECT * FROM timebank WHERE %s IN (fingerprint,'') AND %s in (currency,'')", fingerprint.fingerprint, currency)
 def query_timebank_quota( currency='' ):
     return db.query("SELECT * FROM timebank_quota WHERE %s IN (currency,'')", currency)
-def transfer_time( source, target, currency, amount ):
-    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s AND balance>(%s * 1.003)", source.fingerprint, currency, amount):
-        return False
-    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s", target.fingerprint, currency):
-        return False
-    db.execute("UPDATE timebank set balance=balance-(%s * 1.003) WHERE fingerprint=%s AND currency=%s", amount, source.fingerprint, currency)
-    db.execute("UPDATE timebank set balance=balance+%s WHERE fingerprint=%s AND currency=%s", amount, target.fingerprint, currency)
-    return True
 
 def require_access( access ):
     if not db.get("SELECT * FROM access WHERE access=%s", access):
@@ -171,78 +166,97 @@ class alias_edit( tornado.web.RequestHandler ):
         self.redirect("/"+access+"/private")
 
 
+def apply_badges_issue( source, target, credential ):
+    content = {"credential": credential}
+    put_speech(source=source, target=target, intent='badge', content=content) 
 class badges_issue( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
-        content = {"credential": self.get_argument("credential")}
-        put_speech(source=source, target=target, intent='badge', content=content) 
+        target = finger( self.get_argument("fingerprint") )
+        apply_badges_issue( source=source, target=target, credential=self.get_argument("credential") )
         self.redirect("/"+access+"/private")
 
 
+def apply_badges_revoke( source, target, credential ):
+    content = {"credential": credential}
+    del_speech(source=source, target=target, intent='badge', content=content) 
 class badges_revoke( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
-        content = {"credential": self.get_argument("credential")}
-        del_speech(source=source, target=target, intent='badge', content=content) 
+        target = finger( self.get_argument("fingerprint") )
+        apply_badges_revoke( source=source, target=target, credential=self.get_argument("credential") )
         self.redirect("/"+access+"/private")
 
 
+def apply_contacts_remember( source, target, keywords, description ):
+        content = {"keywords": keywords, "description": description }
+        del_speech(source=source, target=target, intent='contact')
+        put_speech(source=source, target=target, intent='contact', content=content)
 class contacts_remember( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
-        content = {"keywords": self.get_argument("keywords"), 
-                   "description": self.get_argument("description") }
-        del_speech(source=source, target=target, intent='contact')
-        put_speech(source=source, target=target, intent='contact', content=content)
+        target = finger( self.get_argument("fingerprint") )
+        apply_contacts_remember( source=source, target=target, 
+            keywords=self.get_arguments("keywords"),
+            description=self.get_arguments("description") )
         self.redirect("/"+access+"/private")
 
 
+def apply_contacts_forget( source, target ):
+    del_speech(source=source, target=target, intent='contact')
 class contacts_forget( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
-        del_speech(source=source, target=target, intent='contact') 
+        target = finger( self.get_argument("fingerprint") )
+        apply_contacts_forget( source=source, target=target )
         self.redirect("/"+access+"/private")
 
 
+def apply_message_compose( source, target, subject, voice, message ):
+    content = { "subject": subject, "voice": voice, "message": message }
+    put_speech(source=source, target=target, intent='message', content=content)
 class message_compose( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("fingerprint")})
-        content = {
-            "subject": self.get_argument("subject",""),
-            "voice": float(self.get_argument("voice","1.0")),
-            "message": self.get_argument("message",""),
-        }
-        put_speech(source=source, target=target, intent='message', content=content)
+        target = finger( self.get_argument("fingerprint") )
+        apply_message_compose( source=source, target=target,
+            subject = self.get_argument("subject",""),
+            message = self.get_argument("message",""),
+            voice = float(self.get_argument("voice","1.0")) )
         self.redirect("/"+access+"/private")
 
 
+def apply_timebank_transfer( source, target, currency, amount ):
+    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s AND balance>(%s * 1.003)", source.fingerprint, currency, amount):
+        return False
+    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s", target.fingerprint, currency):
+        return False
+    db.execute("UPDATE timebank set balance=balance-(%s * 1.003) WHERE fingerprint=%s AND currency=%s", amount, source.fingerprint, currency)
+    db.execute("UPDATE timebank set balance=balance+%s WHERE fingerprint=%s AND currency=%s", amount, target.fingerprint, currency)
+    return True
 class timebank_transfer( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         source = get_fingerprint(access)
-        target = tornado.database.Row({"fingerprint": self.get_argument("recipient")})
+        target = finger( self.get_argument("recipient") )
         currency = self.get_argument("currency")
         amount = float(self.get_argument("amount"))
-        transfer_time( source=source, target=target, currency=currency, amount=amount )
+        apply_timebank_transfer( source=source, target=target, currency=currency, amount=amount )
         self.redirect("/"+access+"/private")
 
 
+def apply_documents_remove( document_hash ):
+    del_speech( dchash=document_hash )
 class documents_remove( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
-        dchash = self.get_argument("hash")
+        apply_documents_remove( document_hash=self.get_argument("hash") )
         self.redirect("/"+access+"/private")
-        del_speech( dchash=dchash )
 
 
 class transport_import( tornado.web.RequestHandler ):
@@ -301,6 +315,7 @@ class trade_propose( tornado.web.RequestHandler ):
                 conditions[n]['message'] = self.get_argument('trade-message-'+n)
                 conditions[n]['recipient'] = self.get_argument('trade-recipient-'+n)
                 conditions[n]['subject'] = self.get_argument('trade-subject-'+n)
+                conditions[n]['voice'] = self.get_argument('trade-voice-'+n)
                 stakeholders.append( conditions[n]['sender'] )
             elif conditions[n]['type'] == 'time':
                 conditions[n]['currency'] = self.get_argument('trade-currency-'+n)
@@ -311,7 +326,7 @@ class trade_propose( tornado.web.RequestHandler ):
                 stakeholders.append( conditions[n]['recipient'] )
         trade = {'stakeholders': stakeholders, 'conditions': conditions.values(), 'subject': subject, 'date': time.time()}
         for s in stakeholders:
-            put_speech(source=ident, target=tornado.database.Row({"fingerprint": s}),
+            put_speech(source=ident, target=finger(s),
                        intent="trade-proposal", content=trade)
         self.redirect("/"+access+"/private")
 
@@ -323,5 +338,22 @@ class trade_reply( tornado.web.RequestHandler ):
         response = self.get_argument('response')
         trade = self.get_argument('trade')
         db.execute('UPDATE speech SET intent=%s WHERE target=%s AND dchash=%s', 
-          "trade-accept" if response=="accept" else "trade-reject", ident.fingerprint, trade )
+            "trade-accept" if response=="accept" else "trade-reject", ident.fingerprint, trade )
+        if all( s.intent=="trade-accept" for s in db.query("SELECT * FROM speech WHERE dchash=%s", trade) ):
+            trade = json.loads(db.get('SELECT content FROM speech WHERE dchash=%s LIMIT 1',trade).content)
+            for c in trade['conditions']:
+                if c['type'] == 'badge':
+                    if c['gain'] == 'gain':
+                        apply_badges_issue( source=finger(c['mentor']), target=finger(c['student']), credential=c['credential'] )
+                    else:
+                        apply_badges_revoke( source=finger(c['mentor']), target=finger(c['student']), credential=c['credential'] )
+                elif c['type'] == 'contact':
+                    apply_contacts_remember( source=finger(c['recipient']), target=finger(c['contact']), 
+                        keywords=c['keywords'], description=c['description'] )
+                elif c['type'] == 'message':
+                    apply_message_compose( source=finger(c['sender']), target=finger(c['recipient']),
+                        subject=c['subject'], message=c['message'], voice=c['voice'] )
+                elif c['type'] == 'time':
+                    apply_timebank_transfer( source=finger(c['sender']), target=finger(c['recipient']),
+                        currency=c['currency'], amount=c['amount'] )
         self.redirect("/"+access+"/private")

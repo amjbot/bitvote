@@ -3,7 +3,7 @@
     <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#{{ data_parent }}" href="#collapse-trades{{ ti }}">
       <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
         title="{{ t.source.get('codename','') }}">{{ t.source_fingerprint }}</span>
-      {{ t.get('subject','No subject') }}
+      {{ t.get('subject','') or 'No subject' }}
     </a>
   </div>
   <div id="collapse-trades{{ ti }}" class="accordion-body collapse" style="height: 0px">
@@ -42,6 +42,10 @@
           <tr>
             <td>Message</td>
             <td>{{ c['message'] }}</td>
+          </tr>
+          <tr>
+            <td>Voice</td>
+            <td>{{ c['voice'] }}</td>
           </tr>
         </table>
       </div>
