@@ -140,10 +140,14 @@ class private( tornado.web.RequestHandler ):
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
         open_trades = query_speech( target=ident, intent='trade-proposal' )
+        pending_trades = []
+        rejected_trades = []
+        accepted_trades = []
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts, messages=messages,
             documents=documents, timebank=timebank, timebank_quota=timebank_quota,
-            open_trades=open_trades )
+            open_trades=open_trades, pending_trades=pending_trades,
+            rejected_trades=rejected_trades, accepted_trades=accepted_trades )
 
 
 class alias_edit( tornado.web.RequestHandler ):
