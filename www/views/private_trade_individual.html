@@ -1,0 +1,116 @@
+<div class="accordion-group">
+  <div class="accordion-heading">
+    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#{{ data_parent }}" href="#collapse-trades{{ ti }}">
+      <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
+        title="{{ t.source.get('codename','') }}">{{ t.source_fingerprint }}</span>
+      {{ t.get('subject','No subject') }}
+    </a>
+  </div>
+  <div id="collapse-trades{{ ti }}" class="accordion-body collapse" style="height: 0px">
+    <div class="accordion-inner">
+      {% for c in t.conditions %}
+      {% if c['type'] == 'contact' and c['recipient']==alias.source_fingerprint %}
+      <div class="alert">
+        <p></p><h4>Gain Contact</h4><br>
+        <table class="table">
+          <tr>
+            <td>Fingerprint</td>
+            <td>{{ c['contact'] }}</td>
+          </tr>
+          <tr>
+            <td>Keywords</td>
+            <td>{{ c['keywords'] }}</td>
+          </tr>
+          <tr>
+            <td>Description</td>
+            <td>{{ c['description'] }}</td>
+          </tr>
+        </table>
+      </div>
+      {% elif c['type'] == 'message' and c['sender']==alias.source_fingerprint %}
+      <div class="alert">
+        <p></p><h4>Send Message</h4><br>
+        <table class="table">
+          <tr>
+            <td>Recipient</td>
+            <td>{{ c['recipient'] }}</td>
+          </tr>
+          <tr>
+            <td>Subject</td>
+            <td>{{ c['subject'] }}</td>
+          </tr>
+          <tr>
+            <td>Message</td>
+            <td>{{ c['message'] }}</td>
+          </tr>
+        </table>
+      </div>
+      {% elif c['type'] == 'time' and (c['recipient']==alias.source_fingerprint or c['sender']==alias.source_fingerprint) %}
+      <div class="alert">
+        {% if c['sender']==alias.source_fingerprint %}
+        <p></p><h4>Send Time</h4><br>
+        <table class="table">
+          <tr>
+            <td>Recipient</td>
+            <td>{{ c['recipient'] }}</td>
+          </tr>
+        {% else %}
+        <p></p><h4>Receive Time</h4><br>
+        <table class="table">
+          <tr>
+            <td>Sender</td>
+            <td>{{ c['sender'] }}</td>
+          </tr>
+        {% end %}
+          <tr>
+            <td>Currency</td>
+            <td>{{ c['currency'] }}</td>
+          </tr>
+          <tr>
+            <td>Amount</td>
+            <td>{{ c['amount'] }}</td>
+          </tr>
+        </table>
+      </div>
+      {% elif c['type'] == 'badge' and (c['student']==alias.source_fingerprint or c['mentor']==alias.source_fingerprint) %}
+      <div class="alert">
+        {% if c['mentor']==alias.source_fingerprint %}
+        <p></p><h4>{% if c['gain']=='gain' %}Grant {% else %}Revoke {% end %} Credential</h4><br>
+        <table class="table">
+          <tr>
+            <td>Student</td>
+            <td>{{ c['student'] }}</td>
+          </tr>
+        {% else %}
+        <p></p><h4>{% if c['gain']=='gain' %}Receive {% else %}Forfeit {% end %} Credential</h4><br>
+        <table class="table">
+          <tr>
+            <td>Mentor</td>
+            <td>{{ c['mentor'] }}</td>
+          </tr>
+        {% end %}
+          <tr>
+            <td>credential</td>
+            <td>{{ c['credential'] }}</td>
+          </tr>
+        </table>
+      </div>
+      {% end %}
+      {% end %}
+      {% if "-open-" in data_parent %}
+      <form style="display: inline-block" method="POST" action="/{{ access }}/trade-reply">
+        {% module xsrf_form_html() %}
+        <input type="hidden" name="trade" value="{{ t.document_hash }}">
+        <input type="hidden" name="response" value="accept">
+        <button type="submit" class="btn">Accept</button>
+      </form>
+      <form style="display: inline-block" method="POST" action="/{{ access }}/trade-reply">
+        {% module xsrf_form_html() %}
+        <input type="hidden" name="trade" value="{{ t.document_hash }}">
+        <input type="hidden" name="response" value="reject">
+        <button type="submit" class="btn">Reject</button>
+      </form>
+      {% end %}
+    </div>
+  </div>
+</div>
