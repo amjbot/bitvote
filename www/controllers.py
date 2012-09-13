@@ -257,3 +257,47 @@ class transport_export( tornado.web.RequestHandler ):
             self.write(json.dumps( d )+"\n")
 
 
+class trade_propose( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access( access )
+        ident = get_fingerprint( access )
+        subject = self.get_argument("subject","")
+        conditions = {}
+        stakeholders = []
+        for k in self.request.arguments:
+            if not k.startswith('trade-type-'):
+                continue
+            n = k.split('-')[-1]
+            conditions[n] = {'type': self.get_argument(k)}
+            if conditions[n]['type'] == 'badge':
+                conditions[n]['gain'] = self.get_argument('trade-gain-'+n)
+                conditions[n]['mentor'] = self.get_argument('trade-mentor-'+n)
+                conditions[n]['student'] = self.get_argument('trade-student-'+n)
+                conditions[n]['credential'] = self.get_argument('trade-credential-'+n)
+                stakeholders.append( conditions[n]['mentor'] )
+                stakeholders.append( conditions[n]['student'] )
+            elif conditions[n]['type'] == 'contact':
+                conditions[n]['description'] = self.get_argument('trade-description-'+n)
+                conditions[n]['contact'] = self.get_argument('trade-contact-'+n)
+                conditions[n]['recipient'] = self.get_argument('trade-recipient-'+n)
+                conditions[n]['keywords'] = self.get_argument('trade-keywords-'+n)
+                stakeholders.append( conditions[n]['recipient'] )
+            elif conditions[n]['type'] == 'message':
+                conditions[n]['sender'] = self.get_argument('trade-sender-'+n)
+                conditions[n]['message'] = self.get_argument('trade-message-'+n)
+                conditions[n]['recipient'] = self.get_argument('trade-recipient-'+n)
+                conditions[n]['subject'] = self.get_argument('trade-subject-'+n)
+                stakeholders.append( conditions[n]['sender'] )
+            elif conditions[n]['type'] == 'time':
+                conditions[n]['currency'] = self.get_argument('trade-currency-'+n)
+                conditions[n]['sender'] = self.get_argument('trade-sender-'+n)
+                conditions[n]['recipient'] = self.get_argument('trade-recipient-'+n)
+                conditions[n]['amount'] = self.get_argument('trade-amount-'+n)
+                stakeholders.append( conditions[n]['sender'] )
+                stakeholders.append( conditions[n]['recipient'] )
+        trade = {'stakeholders': stakeholders, 'conditions': conditions.values()}
+        for s in stakeholders:
+            put_speech(source=ident, target=tornado.database.Row({"fingerprint": s}),
+                       intent="trade-proposal", content=trade)
+        self.redirect("/"+access+"/private")
+

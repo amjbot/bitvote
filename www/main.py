@@ -32,6 +32,7 @@ application = tornado.web.Application( [
     ( "^/(?P<access>[_0-9a-zA-Z]+)/documents-remove$",          controllers.documents_remove  ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/transport-import$",          controllers.transport_import  ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/transport-export$",          controllers.transport_export  ),
+    ( "^/(?P<access>[_0-9a-zA-Z]+)/trade-propose$",             controllers.trade_propose     ),
 
 ], **settings )
 

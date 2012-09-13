@@ -1,3 +1,4 @@
+{% import json %}
 <div class="tab-pane fade" id="documents">
   <section>
     <ul id="tab-documents" class="nav nav-tabs">
@@ -24,7 +25,11 @@
               <div class="accordion-inner">
                 <p><b>[hash]</b>: {{ d.document_hash }}</p>
                 {% for (k,v) in d.content.items() %}
+                {% if not isinstance(v,str) %}
+                <p><b>{{ k }}</b>: {{ json.dumps(v) }}</p>
+                {% else %}
                 <p><b>{{ k }}</b>: {{ v }}</p>
+                {% end %}
                 {% end %}
               </div>
             </div>
