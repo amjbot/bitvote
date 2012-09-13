@@ -308,5 +308,8 @@ class trade_reply( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access( access )
         ident = get_fingerprint( access )
-        print >> sys.stderr, self.request.arguments
-        raise tornado.web.HTTPError(403)
+        response = self.get_argument('response')
+        trade = self.get_argument('trade')
+        db.execute('UPDATE speech SET intent=%s WHERE target=%s AND dchash=%s', 
+          "trade-accept" if response=="accept" else "trade-reject", ident.fingerprint, trade )
+        self.redirect("/"+access+"/private")
