@@ -301,7 +301,7 @@ class trade_propose( tornado.web.RequestHandler ):
                 conditions[n]['amount'] = self.get_argument('trade-amount-'+n)
                 stakeholders.append( conditions[n]['sender'] )
                 stakeholders.append( conditions[n]['recipient'] )
-        trade = {'stakeholders': stakeholders, 'conditions': conditions.values(), 'subject': subject}
+        trade = {'stakeholders': stakeholders, 'conditions': conditions.values(), 'subject': subject, 'date': time.time()}
         for s in stakeholders:
             put_speech(source=ident, target=tornado.database.Row({"fingerprint": s}),
                        intent="trade-proposal", content=trade)
