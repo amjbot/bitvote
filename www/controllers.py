@@ -139,9 +139,11 @@ class private( tornado.web.RequestHandler ):
         documents = query_speech( source=ident )
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
+        open_trades = query_speech( target=ident, intent='trade-proposal' )
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts, messages=messages,
-            documents=documents, timebank=timebank, timebank_quota=timebank_quota )
+            documents=documents, timebank=timebank, timebank_quota=timebank_quota,
+            open_trades=open_trades )
 
 
 class alias_edit( tornado.web.RequestHandler ):
@@ -295,9 +297,16 @@ class trade_propose( tornado.web.RequestHandler ):
                 conditions[n]['amount'] = self.get_argument('trade-amount-'+n)
                 stakeholders.append( conditions[n]['sender'] )
                 stakeholders.append( conditions[n]['recipient'] )
-        trade = {'stakeholders': stakeholders, 'conditions': conditions.values()}
+        trade = {'stakeholders': stakeholders, 'conditions': conditions.values(), 'subject': subject}
         for s in stakeholders:
             put_speech(source=ident, target=tornado.database.Row({"fingerprint": s}),
                        intent="trade-proposal", content=trade)
         self.redirect("/"+access+"/private")
 
+
+class trade_reply( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access( access )
+        ident = get_fingerprint( access )
+        print >> sys.stderr, self.request.arguments
+        raise tornado.web.HTTPError(403)

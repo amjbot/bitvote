@@ -7,40 +7,122 @@
     <div id="tab-trade-content" class="tab-content">
       <div class="tab-pane fade active in" id="trade-open">
         <div class="accordion" id="accordion-trades">
+          {% for ti,t in enumerate(open_trades) %}
           <div class="accordion-group">
             <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-trades" href="#collapse-trades0">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
-                Hello, can you meet me for coffee today?
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-trades" href="#collapse-trades{{ ti }}">
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;"
+                 title="{{ t.source.get('codename','') }}">{{ t.source_fingerprint }}</span>
+                {{ t.get('subject','No subject') }}
               </a>
             </div>
-            <div id="collapse-trades0" class="accordion-body collapse" style="height: 0px; ">
+            <div id="collapse-trades{{ ti }}" class="accordion-body collapse" style="height: 0px">
               <div class="accordion-inner">
-                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Gain:</span> 0:03 wiki hours</p>
-                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Lose:</span> 0:02 web hours</p>
-                <form>
+                {% for c in t.conditions %}
+                {% if c['type'] == 'contact' and c['recipient']==alias.source_fingerprint %}
+                <div class="alert">
+                  <p></p><h4>Gain Contact</h4><br>
+                  <table class="table">
+                    <tr>
+                      <td>Fingerprint</td>
+                      <td>{{ c['contact'] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Keywords</td>
+                      <td>{{ c['keywords'] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Description</td>
+                      <td>{{ c['description'] }}</td>
+                    </tr>
+                  </table>
+                </div>
+                {% elif c['type'] == 'message' and c['sender']==alias.source_fingerprint %}
+                <div class="alert">
+                  <p></p><h4>Send Message</h4><br>
+                  <table class="table">
+                    <tr>
+                      <td>Recipient</td>
+                      <td>{{ c['recipient'] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Subject</td>
+                      <td>{{ c['subject'] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Message</td>
+                      <td>{{ c['message'] }}</td>
+                    </tr>
+                  </table>
+                </div>
+                {% elif c['type'] == 'time' and (c['recipient']==alias.source_fingerprint or c['sender']==alias.source_fingerprint) %}
+                <div class="alert">
+                  {% if c['sender']==alias.source_fingerprint %}
+                  <p></p><h4>Send Time</h4><br>
+                  <table class="table">
+                    <tr>
+                      <td>Recipient</td>
+                      <td>{{ c['recipient'] }}</td>
+                    </tr>
+                  {% else %}
+                  <p></p><h4>Receive Time</h4><br>
+                  <table class="table">
+                    <tr>
+                      <td>Sender</td>
+                      <td>{{ c['sender'] }}</td>
+                    </tr>
+                  {% end %}
+                    <tr>
+                      <td>Currency</td>
+                      <td>{{ c['currency'] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Amount</td>
+                      <td>{{ c['amount'] }}</td>
+                    </tr>
+                  </table>
+                </div>
+                {% elif c['type'] == 'badge' and (c['student']==alias.source_fingerprint or c['mentor']==alias.source_fingerprint) %}
+                <div class="alert">
+                  {% if c['mentor']==alias.source_fingerprint %}
+                  <p></p><h4>{% if c['gain']=='gain' %}Grant {% else %}Revoke {% end %} Credential</h4><br>
+                  <table class="table">
+                    <tr>
+                      <td>Student</td>
+                      <td>{{ c['student'] }}</td>
+                    </tr>
+                  {% else %}
+                  <p></p><h4>{% if c['gain']=='gain' %}Receive {% else %}Forfeit {% end %} Credential</h4><br>
+                  <table class="table">
+                    <tr>
+                      <td>Mentor</td>
+                      <td>{{ c['mentor'] }}</td>
+                    </tr>
+                  {% end %}
+                    <tr>
+                      <td>credential</td>
+                      <td>{{ c['credential'] }}</td>
+                    </tr>
+                  </table>
+                </div>
+                {% end %}
+                {% end %}
+                <form style="display: inline-block" method="POST" action="/{{ access }}/trade-reply">
+                  {% module xsrf_form_html() %}
+                  <input type="hidden" name="trade" value="{{ t.document_hash }}">
+                  <input type="hidden" name="response" value="accept">
                   <button type="submit" class="btn">Accept</button>
+                </form>
+                <form style="display: inline-block" method="POST" action="/{{ access }}/trade-reply">
+                  {% module xsrf_form_html() %}
+                  <input type="hidden" name="trade" value="{{ t.document_hash }}">
+                  <input type="hidden" name="response" value="reject">
+                  <button type="submit" class="btn">Reject</button>
                 </form>
               </div>
             </div>
           </div>
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-messages" href="#collapse-trades1">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
-                Application for renewal of gym membership.
-              </a>
-            </div>
-            <div id="collapse-trades1" class="accordion-body collapse" style="height: 0px;">
-              <div class="accordion-inner">
-                <p>Gain: Gym Member (Level 1) credential</p>
-                <p>Lose: 0:03 personal hours</p>
-                <form>
-                  <button type="submit" class="btn">Accept</button>
-                </form>
-              </div>
-            </div>
-          </div>
+          {% end %}
         </div>
       </div>
       <div class="tab-pane fade" id="trade-propose">
