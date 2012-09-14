@@ -7,36 +7,26 @@
     <div id="tab-parent-content" class="tab-content">
       <div class="tab-pane fade active in" id="parent-children">
         <div class="accordion" id="accordion-children">
+          {% for ci,c in enumerate(children) %}
           <div class="accordion-group">
             <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-children" href="#collapse-children0">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342354</span>
-                Hank
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-children" href="#collapse-children{{ ci }}">
+                <span class="muted" style="float: left; height: 20px; width: 263px; overflow: hidden;">{{ c.target_fingerprint }}</span>
+                {{ c.target.get("codename","Anonymous") }}
               </a>
             </div>
-            <div id="collapse-children0" class="accordion-body collapse" style="height: 0px; ">
+            <div id="collapse-children{{ ci }}" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
-                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Location:</span> New Guinea</p>
+                <p><b>Location</b>: {{ c.target.get("location","") or "Unknown" }}</p>
               </div>
             </div>
           </div>
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-children" href="#collapse-children1">
-                <span class="muted" style="float: left; height: 20px; width: 185px; overflow: hidden;">122342355</span>
-                Frank
-              </a>
-            </div>
-            <div id="collapse-children1" class="accordion-body collapse" style="height: 0px;">
-              <div class="accordion-inner">
-                <p><span style="float: left; height: 20px; width: 185px; overflow: hidden;">Location:</span> Indonesia</p>
-              </div>
-            </div>
-          </div>
+          {% end %}
         </div>
       </div>
       <div class="tab-pane fade" id="parent-spawn">
-        <form>
+        <form method="POST" action="/{{ access }}/parent-spawn">
+          {% module xsrf_form_html() %}
           <fieldset>
             <input class="span4" type="text" name="name" placeholder="Name">
           </fieldset>

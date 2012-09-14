@@ -64,6 +64,21 @@ def require_access( access ):
     if not db.get("SELECT * FROM access WHERE access=%s", access):
         raise tornado.web.HTTPError(404)
 
+def apply_timebank_tax( source, currency, amount ):
+    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s AND balance>%s", source.fingerprint, currency, amount):
+        return False
+    db.execute("UPDATE timebank set balance=balance-%s WHERE fingerprint=%s AND currency=%s", amount, source.fingerprint, currency)
+    return True
+def has_timebank_funds( source, currency, amount ):
+    if db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s AND balance>%s", source.fingerprint, currency, amount):
+        return True
+    else:
+        return False
+def apply_timebank_debit( source, currency, amount ):
+    db.execute("UPDATE timebank set balance=balance-%s WHERE fingerprint=%s AND currency=%s", amount, source.fingerprint, currency)
+def apply_timebank_credit( source, currency, amount ):
+    db.execute("UPDATE timebank set balance=balance+%s WHERE fingerprint=%s AND currency=%s", amount, target.fingerprint, currency)
+
 
 class index( tornado.web.RequestHandler ):
     def get( self, access ):
@@ -79,6 +94,7 @@ class index( tornado.web.RequestHandler ):
 class bulletin( tornado.web.RequestHandler ):
     def get( self, access ):
         require_access(access)
+        ident = get_fingerprint( access )
         bulletin = query_speech( intent='bulletin' )
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
@@ -100,6 +116,7 @@ class bulletin_compose( tornado.web.RequestHandler ):
 class wiki( tornado.web.RequestHandler ):
     def get( self, access, page ):
         require_access(access)
+        ident = get_fingerprint( access )
         page_content = ""
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
@@ -115,6 +132,7 @@ class wiki( tornado.web.RequestHandler ):
 class web( tornado.web.RequestHandler ):
     def get( self, access ):
         require_access(access)
+        ident = get_fingerprint( access )
         result_set = []
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
@@ -131,6 +149,7 @@ class private( tornado.web.RequestHandler ):
         student_credentials = query_speech( source=ident, intent='badge' )
         contacts = query_speech( source=ident, intent='contact' )
         messages = query_speech( target=ident, intent='message' )
+        children = query_speech( source=ident, intent='parent' )
         documents = query_speech( source=ident )
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
@@ -149,20 +168,24 @@ class private( tornado.web.RequestHandler ):
         self.render( "private.html", access=access, alias=alias, credentials=credentials,
             student_credentials=student_credentials, contacts=contacts, messages=messages,
             documents=documents, timebank=timebank, timebank_quota=timebank_quota,
-            open_trades=open_trades, pending_trades=pending_trades,
+            open_trades=open_trades, pending_trades=pending_trades, children=children,
             rejected_trades=rejected_trades, accepted_trades=accepted_trades )
 
 
+def apply_alias_edit( source, codename="", location="", profile="" ):
+    del_speech(source=source, intent="alias")
+    put_speech(source=source, intent="alias", content={
+        "codename": codename, "location": location, "profile": profile,
+    })
 class alias_edit( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
         alias = get_fingerprint(access)
-        del_speech(source=alias, intent="alias")
-        put_speech(source=alias, intent="alias", content={
-            "codename": self.get_argument("codename","Anonymous"),
-            "location": self.get_argument("location",""),
-            "profile": self.get_argument("profile",""),
-        })
+        apply_alias_edit( source=alias,
+            codename=self.get_argument("codename","Anonymous"),
+            location=self.get_argument("location",""),
+            profile=self.get_argument("profile",""),
+        )
         self.redirect("/"+access+"/private")
 
 
@@ -191,7 +214,7 @@ class badges_revoke( tornado.web.RequestHandler ):
 
 
 def apply_contacts_remember( source, target, keywords, description ):
-        content = {"keywords": keywords, "description": description }
+        content = {"keywords": keywords, "description": description}
         del_speech(source=source, target=target, intent='contact')
         put_speech(source=source, target=target, intent='contact', content=content)
 class contacts_remember( tornado.web.RequestHandler ):
@@ -232,12 +255,11 @@ class message_compose( tornado.web.RequestHandler ):
 
 
 def apply_timebank_transfer( source, target, currency, amount ):
-    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s AND balance>(%s * 1.003)", source.fingerprint, currency, amount):
+    tax_adjusted_amount = amount * 1.003
+    if not has_timebank_funds( source=source, currency=currency, amount=tax_adjusted_amount ):
         return False
-    if not db.get("SELECT * FROM timebank WHERE fingerprint=%s AND currency=%s", target.fingerprint, currency):
-        return False
-    db.execute("UPDATE timebank set balance=balance-(%s * 1.003) WHERE fingerprint=%s AND currency=%s", amount, source.fingerprint, currency)
-    db.execute("UPDATE timebank set balance=balance+%s WHERE fingerprint=%s AND currency=%s", amount, target.fingerprint, currency)
+    apply_timebank_debit( source=source, currency=currency, amount=tax_adjusted_amount )
+    apply_timebank_credit( source=source, currency=currency, amount=amount )
     return True
 class timebank_transfer( tornado.web.RequestHandler ):
     def post( self, access ):
@@ -246,8 +268,10 @@ class timebank_transfer( tornado.web.RequestHandler ):
         target = finger( self.get_argument("recipient") )
         currency = self.get_argument("currency")
         amount = float(self.get_argument("amount"))
-        apply_timebank_transfer( source=source, target=target, currency=currency, amount=amount )
-        self.redirect("/"+access+"/private")
+        if apply_timebank_transfer( source=source, target=target, currency=currency, amount=amount ):
+            self.redirect("/"+access+"/private")
+        else:
+            self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds")
 
 
 def apply_documents_remove( document_hash ):
@@ -337,10 +361,14 @@ class trade_reply( tornado.web.RequestHandler ):
         ident = get_fingerprint( access )
         response = self.get_argument('response')
         trade = self.get_argument('trade')
-        db.execute('UPDATE speech SET intent=%s WHERE target=%s AND dchash=%s', 
+        db.execute('UPDATE speech SET intent=%s WHERE target=%s AND dchash=%s',
             "trade-accept" if response=="accept" else "trade-reject", ident.fingerprint, trade )
         if all( s.intent=="trade-accept" for s in db.query("SELECT * FROM speech WHERE dchash=%s", trade) ):
             trade = json.loads(db.get('SELECT content FROM speech WHERE dchash=%s LIMIT 1',trade).content)
+            for c in trade['conditions']:
+                if c['type'] == 'time' and not \
+                    has_timebank_funds( source=finger(c['sender']), currency=c['currency'], amount=c['amount'] ):
+                    return self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds")
             for c in trade['conditions']:
                 if c['type'] == 'badge':
                     if c['gain'] == 'gain':
@@ -354,6 +382,28 @@ class trade_reply( tornado.web.RequestHandler ):
                     apply_message_compose( source=finger(c['sender']), target=finger(c['recipient']),
                         subject=c['subject'], message=c['message'], voice=c['voice'] )
                 elif c['type'] == 'time':
-                    apply_timebank_transfer( source=finger(c['sender']), target=finger(c['recipient']),
+                    can_timebank_transfer( source=finger(c['sender']), target=finger(c['recipient']),
                         currency=c['currency'], amount=c['amount'] )
         self.redirect("/"+access+"/private")
+
+
+def apply_parent_spawn( parent, name ):
+    child_access = ''.join( random.choice( string.letters + string.digits ) for _ in range(32) )
+    child_ident = get_fingerprint( child_access )
+    child_support = db.get("select sum(balance)/3 as child_support from timebank where currency='private'").child_support
+    if has_timebank_funds( source=parent, currency='private', amount=child_support ):
+        apply_timebank_debit( source=parent, currency='private', amount=child_support )
+        db.execute("INSERT IGNORE access(access) VALUES(%s)", child_access)
+        put_speech( source=parent, target=child_ident, intent='parent' )
+        apply_alias_edit( source=child_ident, codename=name )
+        return True
+    return False        
+class parent_spawn( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access( access )
+        ident = get_fingerprint( access )
+        name = self.get_argument("name","")
+        if apply_parent_spawn( ident, name ):
+            self.redirect("/"+access+"/private")
+        else:
+            self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds")

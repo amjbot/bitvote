@@ -31,7 +31,6 @@
       <div class="tab-pane fade" id="compose">
         <form method="POST" action="/{{ access }}/bulletin-compose">
           {% module xsrf_form_html() %}
-          <legend>Edit</legend>
           <fieldset>
             <input class="span9" name="subject" type="text" placeholder="Subject">
             <input class="span3" name="voice" type="text" placeholder="Visibility">
