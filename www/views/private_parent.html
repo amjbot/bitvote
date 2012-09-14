@@ -6,6 +6,7 @@
     </ul>
     <div id="tab-parent-content" class="tab-content">
       <div class="tab-pane fade active in" id="parent-children">
+        {% if len(children)>0 %}
         <div class="accordion" id="accordion-children">
           {% for ci,c in enumerate(children) %}
           <div class="accordion-group">
@@ -18,11 +19,17 @@
             <div id="collapse-children{{ ci }}" class="accordion-body collapse" style="height: 0px; ">
               <div class="accordion-inner">
                 <p><b>Location</b>: {{ c.target.get("location","") or "Unknown" }}</p>
+                {% if c.get("redirect","") %}
+                <p><b>Invitation</b>: {{ request.host }}{{ c.redirect }}</p>
+                {% end %}
               </div>
             </div>
           </div>
           {% end %}
         </div>
+        {% else %}
+        <p>You have no known children.</p>
+        {% end %}
       </div>
       <div class="tab-pane fade" id="parent-spawn">
         <form method="POST" action="/{{ access }}/parent-spawn">

@@ -34,10 +34,7 @@ def query_speech( source=tornado.database.Row({'fingerprint':''}),
 def get_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent=""):
     speech = list(query_speech(source=source,target=target,intent=intent,limit=1))
-    return (speech or [tornado.database.Row({"source_fingerprint":source.fingerprint, 
-        "target_fingerprint": target.fingerprint, "intent":intent,
-        "source": tornado.database.Row({}), "target":tornado.database.Row({})
-    })])[0]
+    return (speech or [None])[0]
 def put_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
     content_string = json.dumps(content)
@@ -51,6 +48,7 @@ def put_speech( source=tornado.database.Row({'fingerprint':''}),
 def del_speech( source=tornado.database.Row({'fingerprint':''}), dchash="",
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
     content = json.dumps(content)
+    print >> sys.stderr, source, target, dchash, intent, content
     db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') " +
                "AND %s IN (content,'{}') AND %s IN (dchash,'')",
         source.fingerprint, target.fingerprint, intent, content, dchash )
@@ -271,7 +269,7 @@ class timebank_transfer( tornado.web.RequestHandler ):
         if apply_timebank_transfer( source=source, target=target, currency=currency, amount=amount ):
             self.redirect("/"+access+"/private")
         else:
-            self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds")
+            self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds.")
 
 
 def apply_documents_remove( document_hash ):
@@ -368,7 +366,7 @@ class trade_reply( tornado.web.RequestHandler ):
             for c in trade['conditions']:
                 if c['type'] == 'time' and not \
                     has_timebank_funds( source=finger(c['sender']), currency=c['currency'], amount=c['amount'] ):
-                    return self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds")
+                    return self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds.")
             for c in trade['conditions']:
                 if c['type'] == 'badge':
                     if c['gain'] == 'gain':
@@ -387,14 +385,26 @@ class trade_reply( tornado.web.RequestHandler ):
         self.redirect("/"+access+"/private")
 
 
+class redirect( tornado.web.RequestHandler ):
+    def get( self, redirect ):
+        redirect_expire = get_speech(source=finger(redirect), intent='redirect-expire')
+        if redirect_expire:
+            del_speech(source=finger(redirect), intent='redirect-expire')
+            self.redirect( redirect_expire.destination )
+        else:
+            raise tornado.web.HTTPError(410)
+
+
 def apply_parent_spawn( parent, name ):
     child_access = ''.join( random.choice( string.letters + string.digits ) for _ in range(32) )
+    tmp_redirect = ''.join( random.choice( string.letters + string.digits ) for _ in range(32) )
     child_ident = get_fingerprint( child_access )
     child_support = db.get("select sum(balance)/3 as child_support from timebank where currency='private'").child_support
     if has_timebank_funds( source=parent, currency='private', amount=child_support ):
         apply_timebank_debit( source=parent, currency='private', amount=child_support )
         db.execute("INSERT IGNORE access(access) VALUES(%s)", child_access)
-        put_speech( source=parent, target=child_ident, intent='parent' )
+        put_speech( source=parent, target=child_ident, intent='parent', content={'redirect':'/redirect/'+tmp_redirect} )
+        put_speech( source=finger(tmp_redirect), intent='redirect-expire', content={'destination':'/'+child_access} )
         apply_alias_edit( source=child_ident, codename=name )
         return True
     return False        
@@ -406,4 +416,4 @@ class parent_spawn( tornado.web.RequestHandler ):
         if apply_parent_spawn( ident, name ):
             self.redirect("/"+access+"/private")
         else:
-            self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds")
+            self.redirect("/"+access+"/private?error=Transaction+was+not+completed+due+to+insufficient+funds.")

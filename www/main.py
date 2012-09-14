@@ -35,6 +35,7 @@ application = tornado.web.Application( [
     ( "^/(?P<access>[_0-9a-zA-Z]+)/trade-propose$",             controllers.trade_propose     ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/trade-reply$",               controllers.trade_reply       ),
     ( "^/(?P<access>[_0-9a-zA-Z]+)/parent-spawn$",              controllers.parent_spawn      ),
+    ( "^/redirect/(?P<redirect>[_0-9a-zA-Z]+)$",                controllers.redirect          ),
 
 ], **settings )
 
