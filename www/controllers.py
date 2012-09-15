@@ -139,7 +139,11 @@ class web( tornado.web.RequestHandler ):
     def get( self, access ):
         require_access(access)
         ident = get_fingerprint( access )
-        result_set = []
+        q = self.get_argument("q","").strip().lower()
+        if q:
+            result_set = db.query("SELECT * FROM web_index WHERE term=%s ORDER BY voice DESC", q)
+        else:
+            result_set = db.query("SELECT * FROM web_index GROUP BY uri ORDER BY voice DESC")
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
         self.render( "web.html", access=access, result_set=result_set,
