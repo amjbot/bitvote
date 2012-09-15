@@ -1,12 +1,13 @@
 import tornado.web
 import tornado.database
+import tornado.escape
 import random
 import string
 import json
 import hashlib
 import sys
 import time
-
+import pystache
 
 db = tornado.database.Connection(host="localhost",user="root",database="root",password="root")
 
@@ -35,7 +36,7 @@ def get_speech( source=tornado.database.Row({'fingerprint':''}),
                 target=tornado.database.Row({'fingerprint':''}), intent=""):
     speech = list(query_speech(source=source,target=target,intent=intent,limit=1))
     return (speech or [None])[0]
-def put_speech( source=tornado.database.Row({'fingerprint':''}),
+def put_speech( source=tornado.database.Row({'fingerprint':''}), voice=1.0,
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
     content_string = json.dumps(content)
     if not db.get("SELECT * FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') AND %s IN (content,'{}')",
@@ -43,12 +44,11 @@ def put_speech( source=tornado.database.Row({'fingerprint':''}),
         dchash = hashlib.md5(
           json.dumps(dict(content.items() + [('source',source.fingerprint),('target',target.fingerprint),('intent',intent)] ))
         ).hexdigest()
-        db.execute( "INSERT IGNORE speech(source,target,intent,content,dchash) VALUES(%s,%s,%s,%s,%s)",
-            source.fingerprint, target.fingerprint, intent, content_string, dchash )
+        db.execute( "INSERT IGNORE speech(source,target,intent,content,dchash,voice) VALUES(%s,%s,%s,%s,%s,%s)",
+            source.fingerprint, target.fingerprint, intent, content_string, dchash, voice )
 def del_speech( source=tornado.database.Row({'fingerprint':''}), dchash="",
                 target=tornado.database.Row({'fingerprint':''}), intent="", content={} ):
     content = json.dumps(content)
-    print >> sys.stderr, source, target, dchash, intent, content
     db.execute("DELETE FROM speech WHERE %s IN (source,'') AND %s IN (target,'') AND %s IN (intent,'') " +
                "AND %s IN (content,'{}') AND %s IN (dchash,'')",
         source.fingerprint, target.fingerprint, intent, content, dchash )
@@ -116,15 +116,24 @@ class wiki( tornado.web.RequestHandler ):
         require_access(access)
         ident = get_fingerprint( access )
         page_content = ""
+        for w in query_speech( intent='wiki' ):
+            if w.title == page:
+                page_content = w.body
+                break
+        page_content = pystache.render( page_content, {"access": access})
         timebank = query_timebank( fingerprint=ident )
         timebank_quota = query_timebank_quota()
         self.render( "wiki.html", access=access, page=page, page_content=page_content,
             timebank=timebank, timebank_quota=timebank_quota )
-    def post( self ):
-        access = self.get_argument("access")
-        follow = self.get_argument("follow",None)
-        title = self.get_argument("title","")
+class wiki_edit( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        ident = get_fingerprint( access )
+        title = self.get_argument("title")
+        voice = float(self.get_argument("voice","1.0"))
         body = self.get_argument("body","")
+        put_speech( source=ident, intent="wiki", voice=voice, content={"title":title, "body":body} )
+        self.redirect("/"+access+"/wiki/"+tornado.escape.url_escape(title))
 
 
 class web( tornado.web.RequestHandler ):
@@ -238,8 +247,8 @@ class contacts_forget( tornado.web.RequestHandler ):
 
 
 def apply_message_compose( source, target, subject, voice, message ):
-    content = { "subject": subject, "voice": voice, "message": message }
-    put_speech(source=source, target=target, intent='message', content=content)
+    content = { "subject": subject, "message": message }
+    put_speech(source=source, target=target, intent='message', content=content, voice=voice)
 class message_compose( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)
@@ -407,7 +416,7 @@ def apply_parent_spawn( parent, name ):
         put_speech( source=finger(tmp_redirect), intent='redirect-expire', content={'destination':'/'+child_access} )
         apply_alias_edit( source=child_ident, codename=name )
         return True
-    return False        
+    return False
 class parent_spawn( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access( access )
