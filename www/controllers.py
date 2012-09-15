@@ -145,6 +145,15 @@ class web( tornado.web.RequestHandler ):
         timebank_quota = query_timebank_quota()
         self.render( "web.html", access=access, result_set=result_set,
             timebank=timebank, timebank_quota=timebank_quota )
+class web_share( tornado.web.RequestHandler ):
+    def post( self, access ):
+        require_access(access)
+        ident = get_fingerprint( access )
+        uri = self.get_argument("uri")
+        voice = float(self.get_argument("voice","1.0"))
+        description = self.get_argument("description","")
+        put_speech( source=ident, intent="web-share", voice=voice, content={"uri":uri, "description":description} )
+        self.redirect("/"+access+"/private")
 
 
 class private( tornado.web.RequestHandler ):
