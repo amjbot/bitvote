@@ -98,7 +98,6 @@ class bulletin( tornado.web.RequestHandler ):
         timebank_quota = query_timebank_quota()
         self.render( "bulletin.html", access=access, bulletin=bulletin,
             timebank=timebank, timebank_quota=timebank_quota )
-
 class bulletin_compose( tornado.web.RequestHandler ):
     def post( self, access ):
         require_access(access)

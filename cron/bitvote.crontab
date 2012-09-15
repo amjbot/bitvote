@@ -1,2 +1,3 @@
 # m h  dom mon dow   command
 * * * * * /home/ubuntu/bitvote/cron/time_quota.py
+3 * * * * /home/ubuntu/bitvote/cron/rebuild_index.py

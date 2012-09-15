@@ -32,3 +32,10 @@ CREATE TABLE IF NOT EXISTS speech (
     KEY(target,active),
     KEY(intent,active)
 );
+CREATE TABLE IF NOT EXISTS web_index (
+    term VARBINARY(512) NOT NULL,
+    uri VARBINARY(512) NOT NULL,
+    dirty DOUBLE NOT NULL DEFAULT 0,
+    voice DOUBLE NOT NULL DEFAULT 1,
+    PRIMARY KEY(term,uri)
+);
